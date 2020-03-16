@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CameraView"
+    android:id="@+id/myLayout"
+    >
+
+
+    <Button
+        android:id="@+id/submit"
+        android:layout_width="239dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:clickable="false"
+        android:text="@string/submit"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/takePicture"
+        app:layout_constraintVertical_bias="0.782"
+        tools:text="提交" />
+
+    <TextView
+        android:id="@+id/displayDate"
+        android:layout_width="272dp"
+        android:layout_height="37dp"
+        android:layout_marginStart="69dp"
+        android:layout_marginEnd="70dp"
+        android:text="Date"
+        app:layout_constraintBottom_toTopOf="@+id/displayLocation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/displayUserName" />
+
+    <TextView
+        android:id="@+id/displayLocation"
+        android:layout_width="272dp"
+        android:layout_height="37dp"
+        android:layout_marginStart="69dp"
+        android:layout_marginEnd="70dp"
+        android:layout_marginBottom="6dp"
+        android:text="Location"
+        app:layout_constraintBottom_toTopOf="@+id/takePicture"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/displayDate" />
+
+    <Button
+        android:id="@+id/takePicture"
+        android:layout_width="239dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
+        android:text="@string/takePicture"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/submit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/displayLocation"
+        tools:text="拍照" />
+
+    <TextView
+        android:id="@+id/displayUserName"
+        android:layout_width="272dp"
+        android:layout_height="37dp"
+        android:layout_marginStart="69dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="70dp"
+        android:text="@string/userName"
+        app:layout_constraintBottom_toTopOf="@+id/displayDate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="5dp"
+        android:contentDescription="@string/imageView"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@+id/displayUserName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_default="percent"
+        app:layout_constraintHeight_percent="0.4"
+        app:layout_constraintHorizontal_bias="0.35"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="1"
+        app:srcCompat="@android:color/transparent" />
+
+    <TextView
+        android:id="@+id/infoDisplay"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#FBFBFB"
+        android:text="@string/text_view"
+        android:textColor="#080908"
+        android:textSize="40dp"
+        android:textStyle="bold"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <Button
+        android:id="@+id/logout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="退出登录"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
