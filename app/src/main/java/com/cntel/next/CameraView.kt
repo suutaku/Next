@@ -251,9 +251,10 @@ class CameraView : AppCompatActivity(){
                 imageView.background = Drawable.createFromPath(picturePath)
             }
             RESULT_TAKE_PHOTO ->{
+                if(resultCode != RESULT_OK)return
                 Log.e("TAG","RESULT_TAKE_PHOTO")
-                val imageUri = imageUri ?: return
-                val bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(imageUri))
+                var inputSrream: InputStream? = contentResolver.openInputStream(imageUri) ?: return
+                val bitmap = BitmapFactory.decodeStream(inputSrream)
                 imageBuffer = bitmap
                 imageView.setImageBitmap(bitmap)
                 //enable submit button
