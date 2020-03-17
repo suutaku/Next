@@ -1,10 +1,8 @@
 <resources>
     <string name="app_name">Next</string>
     <string name="takePicture">拍照</string>
-    <string name="todo">todo</string>
     <string name="imageView">TODO</string>
     <string name="userName">用户名</string>
     <string name="submit">提交</string>
-    <string name="_111111">111111</string>
     <string name="text_view" />
 </resources>
