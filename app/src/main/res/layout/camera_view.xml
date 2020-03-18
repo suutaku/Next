@@ -2,129 +2,82 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+    android:id="@+id/myLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CameraView"
-    android:id="@+id/myLayout"
-    >
+    android:background="#FFFCFC"
+    android:orientation="vertical"
+    tools:context=".CameraView">
 
 
     <Button
-        android:id="@+id/submit"
-        android:layout_width="239dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:clickable="false"
-        android:text="@string/submit"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/menuButton"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/caidan"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.026"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/takePicture"
-        app:layout_constraintVertical_bias="0.782"
-        tools:text="提交" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/displayDate"
-        android:layout_width="272dp"
-        android:layout_height="37dp"
-        android:layout_marginStart="69dp"
-        android:layout_marginEnd="70dp"
-        android:text="Date"
-        app:layout_constraintBottom_toTopOf="@+id/displayLocation"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/displayUserName" />
-
-    <TextView
-        android:id="@+id/displayLocation"
-        android:layout_width="272dp"
-        android:layout_height="37dp"
-        android:layout_marginStart="69dp"
-        android:layout_marginEnd="70dp"
-        android:layout_marginBottom="6dp"
-        android:text="Location"
-        app:layout_constraintBottom_toTopOf="@+id/takePicture"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/displayDate" />
-
-    <Button
-        android:id="@+id/takePicture"
-        android:layout_width="239dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="5dp"
-        android:text="@string/takePicture"
-        android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/submit"
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/textInputEditText"
+        android:layout_width="254dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="164dp"
+        android:background="#E8E8EC"
+        android:gravity="center"
+        android:hint="请输入关键字"
+        android:shadowColor="#555555"
+        android:textColor="#0E0E0E"
+        android:textColorHint="#979696"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/displayLocation"
-        tools:text="拍照" />
-
-    <TextView
-        android:id="@+id/displayUserName"
-        android:layout_width="272dp"
-        android:layout_height="37dp"
-        android:layout_marginStart="69dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="70dp"
-        android:text="@string/userName"
-        app:layout_constraintBottom_toTopOf="@+id/displayDate"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="5dp"
-        android:contentDescription="@string/imageView"
-        android:scaleType="fitCenter"
-        app:layout_constraintBottom_toTopOf="@+id/displayUserName"
+        android:layout_width="52dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="10dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_default="percent"
-        app:layout_constraintHeight_percent="0.4"
-        app:layout_constraintHorizontal_bias="0.35"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_default="percent"
-        app:layout_constraintWidth_percent="1"
-        app:srcCompat="@android:color/transparent" />
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/textInputEditText"
+        app:layout_constraintTop_toTopOf="@+id/textInputEditText"
+        app:srcCompat="@drawable/search" />
 
     <TextView
-        android:id="@+id/infoDisplay"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#FBFBFB"
-        android:text="@string/text_view"
-        android:textColor="#080908"
-        android:textSize="40dp"
-        android:textStyle="bold"
+        android:id="@+id/searchHint"
+        android:layout_width="221dp"
+        android:layout_height="40dp"
+        android:cursorVisible="true"
         android:gravity="center"
+        android:hint="@string/search_hint"
+        android:text="请选择搜索条件进行搜索"
+        android:textColor="#333333"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
-
-    <Button
-        android:id="@+id/logout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="退出登录"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.95"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputEditText"
+        app:layout_constraintVertical_bias="0.037" />
+
+    <Spinner
+        android:id="@+id/planets_spinner"
+        android:layout_width="52dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="10dp"
+        android:background="#616060"
+        android:textColor="#1B1A1A"
+        android:textSize="8sp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toStartOf="@+id/textInputEditText"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textInputEditText"
+        tools:ignore="MissingConstraints"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

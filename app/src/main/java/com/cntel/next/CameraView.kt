@@ -1,11 +1,9 @@
 package com.cntel.next
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.content.ContentValues
+import android.content.ClipData
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -17,14 +15,8 @@ import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import org.json.JSONObject
 import java.io.*
@@ -33,12 +25,13 @@ import java.util.*
 import java.net.URL
 import java.net.HttpURLConnection
 import android.util.Base64
+import android.widget.*
 import kotlinx.android.synthetic.main.camera_view.*
 import org.json.JSONArray
-import kotlin.math.log
-
 
 class CameraView : AppCompatActivity(){
+    val TAG = "CameraView"
+    private var cameraLib = CameraLib(this)
     private var MESSAGE_UPDATE_INFO_DISPLAY = 1
     private var MESSAGE_HIDE_INFO_DISPLAY = 2
     private var MESSAGE_SHOW_INFO_DISPLAY = 3
@@ -71,6 +64,7 @@ class CameraView : AppCompatActivity(){
 
     private var newView: TextView? = null
 
+    @SuppressLint("ResourceType")
     @RequiresApi(Build.VERSION_CODES.O)
 
     override fun onCreate(savedInstanceState: Bundle?){
@@ -78,8 +72,60 @@ class CameraView : AppCompatActivity(){
         setContentView(R.layout.camera_view)
         var policy = StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        val newView = findViewById<TextView>(R.id.infoDisplay)
-        newView.isVisible = false
+        var menuButton = findViewById<Button>(R.id.menuButton)
+        menuButton.setOnClickListener {
+            var popMenu = PopupMenu(this,it)
+            popMenu.setOnMenuItemClickListener { item ->
+                when(item.itemId){
+                    R.id.user_information -> {
+                        Log.d(TAG,"item 1")
+                        true
+                    }
+                    R.id.logout -> {
+                        Log.d(TAG,"item 2")
+                        sp=getSharedPreferences("userInfo", MODE_PRIVATE);
+                        var editor=sp?.edit();
+                        editor?.putBoolean("autoLogin", false);
+                        editor?.commit();
+                        val intent= Intent(this,MainActivity::class.java)
+                        startActivity(intent)
+                        Log.d(TAG,"user logout")
+                        true
+                    }
+                    else -> false
+                }
+            }
+            popMenu.inflate(R.layout.menu_main)
+            try {
+                val fieldMPopup = PopupMenu::class.java.getDeclaredField("mPopup")
+                fieldMPopup.isAccessible = true
+                val mPopup = fieldMPopup.get(popMenu)
+                mPopup.javaClass
+                    .getDeclaredMethod("setForceShowIcon", Boolean::class.java)
+                    .invoke(mPopup, true)
+            } catch (e: Exception){
+                Log.e("Main", "Error showing menu icons.", e)
+            } finally {
+                popMenu.show()
+            }
+        }
+
+        val spinner: Spinner = findViewById(R.id.planets_spinner)
+// Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter.createFromResource(
+            this,
+           R.array.planets_array,
+            R.layout.spinner_item
+        ).also { adapter ->
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            // Apply the adapter to the spinner
+            spinner.adapter = adapter
+        }
+        spinner.onItemSelectedListener = SpinnerController()
+        spinner.setSelection( 0,true);
+
+
        // newView!!.isVisible = false
         bundle = Bundle()
         UIHandler = @SuppressLint("HandlerLeak")
@@ -95,19 +141,19 @@ class CameraView : AppCompatActivity(){
                 }else if(msg.what == MESSAGE_SHOW_INFO_DISPLAY){
                     newView!!.isVisible = true
                 }else if(msg.what == MESSAGE_REST_VIEWS){
-                    var userName = findViewById<TextView>(R.id.displayUserName)
-                    userName.text = "UserName: $userNameBuffer"
-                    var locationDisplay = findViewById<TextView>(R.id.displayLocation)
-                    locationDisplay.text = "Location: ${locationBuffer[0]}:${locationBuffer[1]}"
-                    var imageView = findViewById<ImageView>(R.id.imageView)
-                    imageView.setImageResource(android.R.color.transparent)
-                    val simpleDateFormat = SimpleDateFormat("yyyy_MM_dd_mm_ss")
-                    val current = simpleDateFormat.format(Date())
-                    var dateDisplay = findViewById<TextView>(R.id.displayDate)
-                    dateDisplay.text = "Date: $current"
-                    takePicture?.isVisible = true
-                    takePicture?.isEnabled = true
-                    takePicture?.isClickable = true
+//                    var userName = findViewById<TextView>(R.id.displayUserName)
+//                    userName.text = "UserName: $userNameBuffer"
+//                    var locationDisplay = findViewById<TextView>(R.id.displayLocation)
+//                    locationDisplay.text = "Location: ${locationBuffer[0]}:${locationBuffer[1]}"
+//                    var imageView = findViewById<ImageView>(R.id.imageView)
+//                    imageView.setImageResource(android.R.color.transparent)
+//                    val simpleDateFormat = SimpleDateFormat("yyyy_MM_dd_mm_ss")
+//                    val current = simpleDateFormat.format(Date())
+//                    var dateDisplay = findViewById<TextView>(R.id.displayDate)
+//                    dateDisplay.text = "Date: $current"
+//                    takePicture?.isVisible = true
+//                    takePicture?.isEnabled = true
+//                    takePicture?.isClickable = true
                 }else if(msg.what == MESSAGE_NOTIFICATION){
                     var notif = bundle!!.getString("MESSAGE_NOTIFICATION")
                     Toast.makeText(applicationContext, notif, Toast.LENGTH_LONG).show();
@@ -117,129 +163,63 @@ class CameraView : AppCompatActivity(){
             }
         }
 
-        userNameBuffer = intent.getStringExtra("UserName");
-        submitButton = findViewById(R.id.submit)
-        submitButton?.isVisible = false
-        submitButton?.setOnClickListener{
-            submitButton?.isEnabled = false
-            submitButton?.isClickable = false
-            submitButton?.isVisible = false
-            takePicture?.isVisible = false
-            takePicture?.isEnabled = false
-            takePicture?.isClickable = false
-            Log.i("TAG","submit button clicked")
-            Thread{
+//        userNameBuffer = intent.getStringExtra("UserName");
+//        submitButton = findViewById(R.id.submit)
+//        submitButton?.isVisible = false
+//        submitButton?.setOnClickListener{
+//            submitButton?.isEnabled = false
+//            submitButton?.isClickable = false
+//            submitButton?.isVisible = false
+////            takePicture?.isVisible = false
+////            takePicture?.isEnabled = false
+////            takePicture?.isClickable = false
+//            Log.i(TAG,"submit button clicked")
+//            Thread{
+////
+//                uploadImage()
+////                submitButton?.isEnabled = true
+////                submitButton?.isClickable = true
+////                submitButton?.setTextColor(0xFFFFFF)
 //
-                uploadImage()
-//                submitButton?.isEnabled = true
-//                submitButton?.isClickable = true
-//                submitButton?.setTextColor(0xFFFFFF)
+//            }.start()
+//
+//
+//        }
 
-            }.start()
+//        var userName = findViewById<TextView>(R.id.displayUserName)
+//        userName.text = "UserName: $userNameBuffer"
+//        var locationDisplay = findViewById<TextView>(R.id.displayLocation)
+//        locationDisplay.text = "Location: $locationValue"
+//        val simpleDateFormat = SimpleDateFormat("yyyy_MM_dd_mm_ss")
+//        val current = simpleDateFormat.format(Date())
+//        var dateDisplay = findViewById<TextView>(R.id.displayDate)
+//        dateDisplay.text = "Date: $current"
 
-
-        }
-
-        var userName = findViewById<TextView>(R.id.displayUserName)
-        userName.text = "UserName: $userNameBuffer"
-        var locationDisplay = findViewById<TextView>(R.id.displayLocation)
-        locationDisplay.text = "Location: $locationValue"
-        val simpleDateFormat = SimpleDateFormat("yyyy_MM_dd_mm_ss")
-        val current = simpleDateFormat.format(Date())
-        var dateDisplay = findViewById<TextView>(R.id.displayDate)
-        dateDisplay.text = "Date: $current"
-
-        logoutButton = findViewById<Button>(R.id.logout)
-        logoutButton?.setOnClickListener{
-            sp=getSharedPreferences("userInfo", MODE_PRIVATE);
-            var editor=sp?.edit();
-            editor?.putBoolean("autoLogin", false);
-            editor?.commit();
-            val intent= Intent(this,MainActivity::class.java)
-            startActivity(intent)
-
-        }
         supportActionBar?.hide()
-        Log.d("hello","created")
+        Log.d(TAG,"created")
         val currentAPIVersion = android.os.Build.VERSION.SDK_INT
-        var takeButton = findViewById<Button>(R.id.takePicture)
+//        var takeButton = findViewById<Button>(R.id.takePicture)
         // Create persistent LocationManager reference
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
         try{
             locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0f, locationListener)
             locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener)
         }catch (ex: SecurityException){
-            Log.d("hello", "Security Exception, no location available")
+            Log.d(TAG, "Security Exception, no location available")
         }
 
-        takeButton.setOnClickListener{
-            //get location
-            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            if (hasSdcard()){
-                Log.d("hello","hash sdcard")
-                val simpleDateFormat = SimpleDateFormat("yyyy_MM_dd_mm_ss")
-                val fileName = simpleDateFormat.format(Date())
-                val tempFile = File(Environment.getExternalStorageDirectory(), "$fileName.jpg")
-                if (currentAPIVersion<24){
-                    //从文件中创建uri
-                    imageUri = Uri.fromFile(tempFile)
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
-                }else{
-                    //兼容android7.0 使用共享文件的形式
-                    val contentValues = ContentValues(1)
-                    contentValues.put(MediaStore.Images.Media.DATA, tempFile.absolutePath)
-                    //检查是否有存储权限，以免崩溃
-                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                        //申请WRITE_EXTERNAL_STORAGE权限
-                        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),0)
-
-                        Toast.makeText(this, "请开启存储权限", Toast.LENGTH_SHORT).show()
-                    }
-                    imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
-
-                }
-            }else{
-                Log.d("hello","not have sdcard")
-            }
-            // 开启一个带有返回值的Activity，请求码为PHOTO_REQUEST_CAREMA
-
-            startActivityForResult(intent, RESULT_TAKE_PHOTO);
-        }
+//        takeButton.setOnClickListener{
+//            cameraLib.openCamera()
+//        }
 
     }
-    private val locationListener: LocationListener = object : LocationListener {
-        override fun onLocationChanged(location: Location) {
-            var text = ("Location: " + location.longitude + ":" + location.latitude)
-            Log.d("hello",""+location.longitude + ":" + location.latitude)
-            locationValue = text
-            var locationDisplay = findViewById<TextView>(R.id.displayLocation)
-            locationDisplay.text = locationValue
-            locationBuffer[0] = location.longitude
-            locationBuffer[1] = location.latitude
-            Log.d("UpdateLocationBuffer: ","${locationBuffer[0]} ${locationBuffer[1]}")
 
-        }
-        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
-            Log.d("location",provider+"in status $status")
-        }
-        override fun onProviderEnabled(provider: String) {
-            Log.d("location", "$provider disable")
-        }
-        override fun onProviderDisabled(provider: String) {
-            Log.d("location", "$provider enable")
-        }
-    }
-    private fun hasSdcard(): Boolean {
-        return Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
-    }
-
-    @SuppressLint("NewApi", "SetTextI18n")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        Log.d(TAG,"onActivityResult called")
         super.onActivityResult(requestCode, resultCode, data)
         var imageView = findViewById<ImageView>(R.id.imageView)
         when(requestCode ){
-            RESULT_LOAD_IMAGE  ->{
+            CameraView.RESULT_LOAD_IMAGE ->{
                 val selectedImage = data!!.data
                 val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
                 val cursor = contentResolver.query(selectedImage,
@@ -250,24 +230,49 @@ class CameraView : AppCompatActivity(){
                 cursor.close()
                 imageView.background = Drawable.createFromPath(picturePath)
             }
-            RESULT_TAKE_PHOTO ->{
-                if(resultCode != RESULT_OK)return
-                Log.e("TAG","RESULT_TAKE_PHOTO")
-                var inputSrream: InputStream? = contentResolver.openInputStream(imageUri) ?: return
-                val bitmap = BitmapFactory.decodeStream(inputSrream)
-                imageBuffer = bitmap
-                imageView.setImageBitmap(bitmap)
-                //enable submit button
-                submitButton?.isEnabled = true
-                submitButton?.isClickable = true
-                submitButton?.isVisible = true
-                Log.i("TAG","button enabled")
+            CameraView.RESULT_TAKE_PHOTO ->{
+                if(resultCode != RESULT_OK){
+                    Log.e(TAG,"RESULT_TAKE_PHOTO NOT OK")
+                    return
+                }
+                Log.d(TAG,"Call back called")
+                var inputStream: InputStream? = contentResolver.openInputStream(cameraLib.getUri() as Uri)
+                    ?: return
+                imageBuffer = BitmapFactory.decodeStream(inputStream)
+                var imgView = findViewById<ImageView>(R.id.imageView)
+                imgView.setImageBitmap(imageBuffer)
+
             }
             else ->{
-                Log.e("TAG","123")
+                Log.e(TAG,"123")
             }
         }
     }
+
+
+    private val locationListener: LocationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location) {
+            var text = ("Location: " + location.longitude + ":" + location.latitude)
+            Log.d(TAG,""+location.longitude + ":" + location.latitude)
+            locationValue = text
+//            var locationDisplay = findViewById<TextView>(R.id.displayLocation)
+//            locationDisplay.text = locationValue
+//            locationBuffer[0] = location.longitude
+//            locationBuffer[1] = location.latitude
+            Log.d(TAG,"${locationBuffer[0]} ${locationBuffer[1]}")
+
+        }
+        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
+            Log.d(TAG,provider+"in status $status")
+        }
+        override fun onProviderEnabled(provider: String) {
+            Log.d(TAG, "$provider disable")
+        }
+        override fun onProviderDisabled(provider: String) {
+            Log.d(TAG, "$provider enable")
+        }
+    }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun doUpload(data: ByteArray) :String{
@@ -290,7 +295,7 @@ class CameraView : AppCompatActivity(){
                     ".jpg" + "\"" + this.crlf);
             outputStream.writeBytes(this.crlf);
             outputStream.write(data)
-            Log.i("upload","write ${data?.size} bytes")
+            Log.i(TAG,"write ${data?.size} bytes")
             outputStream.flush()
         }catch (exception: Exception) {
             throw Exception("Exception ${exception.message}")
@@ -313,7 +318,7 @@ class CameraView : AppCompatActivity(){
             val reader: BufferedReader = BufferedReader(InputStreamReader(connection.inputStream))
             var tmp = reader.readText()
             var jObj = JSONObject(tmp)
-            Log.i("upload",tmp)
+            Log.i(TAG,tmp)
             // submitTransaction(jObj.getString("Hash"))
             reportCluster(jObj.getString("Hash"))
             return jObj.getString("Hash")
@@ -336,7 +341,7 @@ class CameraView : AppCompatActivity(){
         val stream = ByteArrayOutputStream()
         imageBuffer?.compress(Bitmap.CompressFormat.PNG, 90, stream)
         var originalData = stream.toByteArray()
-        Log.i("uoloadImage","Image compressed")
+        Log.i(TAG,"Image compressed")
         var msg3 = Message()
         msg3.what = MESSAGE_UPDATE_INFO_DISPLAY
         bundle?.putString("MESSAGE_UPDATE_INFO_DISPLAY","生成预览图像...")
@@ -354,15 +359,15 @@ class CameraView : AppCompatActivity(){
         bundle?.putString("MESSAGE_UPDATE_INFO_DISPLAY","图像上传中...")
         UIHandler?.sendMessage(msg4)
         var stream2 = ByteArrayOutputStream()
-        Log.i("uoloadImage","Image resized")
+        Log.i(TAG,"Image resized")
         previewmap?.compress(Bitmap.CompressFormat.JPEG, 90, stream2)
-        Log.i("uoloadImage","Image compressed to jpeg")
+        Log.i(TAG,"Image compressed to jpeg")
         var previewData = stream2.toByteArray()
-        Log.i("uoloadImage","toByteArray")
+        Log.i(TAG,"toByteArray")
         var fileHash = doUpload(originalData)
-        Log.i("uoloadImage","Original image uploaded")
+        Log.i(TAG,"Original image uploaded")
        var previewHash = doUpload(previewData)
-        Log.i("uoloadImage","Preview image uploaded")
+        Log.i(TAG,"Preview image uploaded")
         var msg5 = Message()
         msg5.what = MESSAGE_UPDATE_INFO_DISPLAY
         bundle?.putString("MESSAGE_UPDATE_INFO_DISPLAY","区块提交中...")
@@ -388,7 +393,7 @@ class CameraView : AppCompatActivity(){
     }
     private fun reportCluster(hash: String){
         val serverURL: String = clusterReportURL+hash
-        Log.i("reportCluster",serverURL)
+        Log.i(TAG,serverURL)
         val url = URL(serverURL)
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "POST"
@@ -407,7 +412,7 @@ class CameraView : AppCompatActivity(){
             val reader: BufferedReader = BufferedReader(InputStreamReader(connection.inputStream))
             var tmp = reader.readText()
             var jObj = JSONObject(tmp)
-            Log.i("reportCluter",tmp)
+            Log.i(TAG,tmp)
         }
     }
     @RequiresApi(Build.VERSION_CODES.O)
@@ -425,7 +430,7 @@ class CameraView : AppCompatActivity(){
         val current = simpleDateFormat.format(Date())
         postObj.put("Date", current.toString())
         var reqString = postObj.toString()
-        Log.i("blockCommit",reqString)
+        Log.i(TAG,reqString)
         var b64 = Base64.encodeToString(reqString.toByteArray(),Base64.DEFAULT)
 
         val serverURL: String = blockCommitURL+"\"$b64\""
@@ -447,7 +452,7 @@ class CameraView : AppCompatActivity(){
             val reader: BufferedReader = BufferedReader(InputStreamReader(connection.inputStream))
             var tmp = reader.readText()
             var jObj = JSONObject(tmp)
-            Log.i("upload",tmp)
+            Log.i(TAG,tmp)
             return jObj
         }
         return null

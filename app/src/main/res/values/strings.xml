@@ -5,4 +5,9 @@
     <string name="userName">用户名</string>
     <string name="submit">提交</string>
     <string name="text_view" />
+    <string name="search_hint">请选择筛选条件进行查询</string>
+    <string-array name="planets_array">
+        <item>用户名</item>
+        <item>Hash</item>
+    </string-array>
 </resources>

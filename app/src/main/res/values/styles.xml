@@ -1,5 +1,10 @@
 <resources>
 
     <!-- Base application theme. -->
+    <style name="Spinner" parent="Widget.AppCompat.Light.DropDownItem.Spinner">
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:textSize">12sp</item>
+    </style>
 
 </resources>

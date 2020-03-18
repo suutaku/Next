@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" android:layout_height="match_parent" android:layout_width="match_parent">
+    <item
+        android:id="@+id/user_information"
+        android:title="用户信息"
+        android:icon="@drawable/user"/>
+    <item
+        android:id="@+id/logout"
+        android:title="退出登录"
+        android:icon="@drawable/exit"/>
+</menu>
