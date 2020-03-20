@@ -76,4 +76,9 @@ class CameraLib(con: Context)  : AppCompatActivity(){
         activity?.startActivityForResult(intent, RESULT_TAKE_PHOTO)
     }
 
+    fun loadImage(){
+        val intent = Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(intent, RESULT_LOAD_IMAGE)
+    }
+
 }

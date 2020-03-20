@@ -2,11 +2,15 @@ package com.cntel.next
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.baidu.location.BDAbstractLocationListener
@@ -28,7 +32,7 @@ class MapViewController : AppCompatActivity() {
     @SuppressLint("WorldWriteableFiles")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        SDKInitializer.initialize(applicationContext)
+        
         setContentView(R.layout.map_view)
 
         //back
@@ -68,16 +72,18 @@ class MapViewController : AppCompatActivity() {
                     if (result == null
                         || result.error != SearchResult.ERRORNO.NO_ERROR
                     ) { // 没有检测到结果
-                        Toast.makeText(
-                            this@MapViewController, "抱歉，未能找到结果",
-                            Toast.LENGTH_LONG
-                        ).show()
+//                        Toast.makeText(
+//                            this@MapViewController, "抱歉，未能找到结果",
+//                            Toast.LENGTH_LONG
+//                        ).show()
+                        showAlterDialog( "抱歉，未能找到结果", LatLng(.0,.0))
                     }
-                    Toast.makeText(
-                        this@MapViewController,
-                        "位置：" + result.address, Toast.LENGTH_LONG
-                    )
-                        .show()
+//                    Toast.makeText(
+//                        this@MapViewController,
+//                        "位置：" + result.address, Toast.LENGTH_LONG
+//                    )
+//                        .show()
+                    showAlterDialog( "位置：" + result.address,result.location)
                 }
 
                 // 地理编码查询结果回调函数
@@ -154,5 +160,26 @@ class MapViewController : AppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         mLocationClient.restart()
+    }
+    fun showAlterDialog(message: String, latLng: LatLng){
+        var dLog = AlertDialog.Builder(this)
+        dLog.setTitle("确认信息")
+        dLog.setMessage(message)
+        dLog.setNegativeButton("取消",
+            DialogInterface.OnClickListener { _: DialogInterface, _: Int ->
+                return@OnClickListener })
+
+        dLog.setPositiveButton("确认",
+            DialogInterface.OnClickListener { _: DialogInterface, _: Int ->
+                val intent= Intent(this,CameraView::class.java)
+                intent.putExtra("LatFromMap",latLng.latitude)
+                intent.putExtra("LngFromMap",latLng.longitude)
+                intent.putExtra("AddressFromMap",message)
+                startActivity(intent)
+            })
+
+        dLog.show()
+
+
     }
 }

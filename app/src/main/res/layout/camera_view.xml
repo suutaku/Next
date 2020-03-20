@@ -67,24 +67,26 @@
         app:layout_constraintTop_toTopOf="@+id/channel8" />
 
     <EditText
-        android:id="@+id/editText4"
+        android:id="@+id/latEdit"
         android:layout_width="55dp"
         android:layout_height="30dp"
         android:background="@drawable/edit_background"
         android:ems="10"
         android:inputType="textPersonName"
+        android:textColor="#333333"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.43"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/channel8" />
 
     <EditText
-        android:id="@+id/editText6"
+        android:id="@+id/lngEdit"
         android:layout_width="55dp"
         android:layout_height="30dp"
         android:background="@drawable/edit_background"
         android:ems="10"
         android:inputType="textPersonName"
+        android:textColor="#333333"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.719"
         app:layout_constraintStart_toStartOf="parent"
@@ -200,7 +202,7 @@
         android:id="@+id/spinner_month_start"
         android:layout_width="42dp"
         android:layout_height="30dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="52dp"
         android:background="@drawable/spinner_background_2"
         android:textColor="#1B1A1A"
         android:textSize="8sp"
@@ -212,8 +214,19 @@
         tools:ignore="MissingConstraints"
         tools:visibility="visible" />
 
+    <TextView
+        android:id="@+id/channel9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="开始日期"
+        android:textColor="#373737"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.123"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/spinner_month_start" />
+
     <Spinner
-        android:id="@+id/spinner_day_end"
+        android:id="@+id/spinner_year_start"
         android:layout_width="42dp"
         android:layout_height="30dp"
         android:background="@drawable/spinner_background_2"
@@ -221,9 +234,25 @@
         android:textSize="8sp"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.737"
+        app:layout_constraintHorizontal_bias="0.314"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/spinner_month_end"
+        app:layout_constraintTop_toTopOf="@+id/spinner_month_start"
+        tools:ignore="MissingConstraints"
+        tools:visibility="visible" />
+
+    <Spinner
+        android:id="@+id/spinner_month_end"
+        android:layout_width="42dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/spinner_background_2"
+        android:textColor="#1B1A1A"
+        android:textSize="8sp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.528"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spinner_month_start"
         tools:ignore="MissingConstraints"
         tools:visibility="visible" />
 
@@ -243,24 +272,13 @@
         tools:visibility="visible" />
 
     <TextView
-        android:id="@+id/channel14"
+        android:id="@+id/channel16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="年"
+        android:text="日"
         android:textColor="#373737"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.425"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/spinner_month_end" />
-
-    <TextView
-        android:id="@+id/channel17"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="结束日期"
-        android:textColor="#373737"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.123"
+        app:layout_constraintHorizontal_bias="0.808"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/spinner_month_end" />
 
@@ -276,20 +294,41 @@
         app:layout_constraintTop_toTopOf="@+id/spinner_month_end" />
 
     <Spinner
-        android:id="@+id/spinner_month_end"
+        android:id="@+id/spinner_day_end"
         android:layout_width="42dp"
         android:layout_height="30dp"
-        android:layout_marginTop="16dp"
         android:background="@drawable/spinner_background_2"
         android:textColor="#1B1A1A"
         android:textSize="8sp"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.528"
+        app:layout_constraintHorizontal_bias="0.737"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner_month_start"
+        app:layout_constraintTop_toTopOf="@+id/spinner_month_end"
         tools:ignore="MissingConstraints"
         tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/channel17"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="结束日期"
+        android:textColor="#373737"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.123"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/spinner_month_end" />
+
+    <TextView
+        android:id="@+id/channel14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="年"
+        android:textColor="#373737"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.425"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/spinner_month_end" />
 
     <TextView
         android:id="@+id/channel11"
@@ -301,54 +340,6 @@
         app:layout_constraintHorizontal_bias="0.808"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/spinner_month_start" />
-
-    <TextView
-        android:id="@+id/channel9"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="开始日期"
-        android:textColor="#373737"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.123"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/spinner_month_start" />
-
-    <TextView
-        android:id="@+id/channel16"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="日"
-        android:textColor="#373737"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.808"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/spinner_month_end" />
-
-    <TextView
-        android:id="@+id/channel12"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="年"
-        android:textColor="#373737"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.425"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/spinner_month_start" />
-
-    <Spinner
-        android:id="@+id/spinner_year_start"
-        android:layout_width="42dp"
-        android:layout_height="30dp"
-        android:background="@drawable/spinner_background_2"
-        android:textColor="#1B1A1A"
-        android:textSize="8sp"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.314"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/spinner_month_start"
-        tools:ignore="MissingConstraints"
-        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/channel13"
@@ -375,6 +366,17 @@
         app:layout_constraintTop_toTopOf="@+id/spinner_month_start"
         tools:ignore="MissingConstraints"
         tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/channel12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="年"
+        android:textColor="#373737"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.425"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/spinner_month_start" />
 
     <TextView
         android:id="@+id/channel4"
@@ -472,17 +474,38 @@
         tools:ignore="MissingConstraints"
         tools:visibility="visible" />
 
+    <TextView
+        android:id="@+id/adressDisplay"
+        android:layout_width="246dp"
+        android:layout_height="31dp"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:textColor="#333333"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/channel8" />
+
     <Button
-        android:id="@+id/radioButton"
+        android:id="@+id/loadPicture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/round_button"
-        android:text="开始"
-        android:textSize="26dp"
+        android:text="相册"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintHorizontal_bias="0.804"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/takePictrue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="拍照"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.201"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
