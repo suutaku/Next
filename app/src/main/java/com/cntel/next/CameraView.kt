@@ -1,7 +1,7 @@
 package com.cntel.next
 
 import android.annotation.SuppressLint
-import android.content.ClipData
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
@@ -26,7 +26,6 @@ import java.net.URL
 import java.net.HttpURLConnection
 import android.util.Base64
 import android.widget.*
-import kotlinx.android.synthetic.main.camera_view.*
 import org.json.JSONArray
 
 class CameraView : AppCompatActivity(){
@@ -83,7 +82,7 @@ class CameraView : AppCompatActivity(){
                     }
                     R.id.logout -> {
                         Log.d(TAG,"item 2")
-                        sp=getSharedPreferences("userInfo", MODE_PRIVATE);
+                        sp=getSharedPreferences("userInfo", Context.MODE_PRIVATE);
                         var editor=sp?.edit();
                         editor?.putBoolean("autoLogin", false);
                         editor?.commit();
@@ -109,23 +108,20 @@ class CameraView : AppCompatActivity(){
                 popMenu.show()
             }
         }
+        // spinners
+        var spManager = SpinnerManager(this)
+        spManager.init()
 
-        val spinner: Spinner = findViewById(R.id.planets_spinner)
-// Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter.createFromResource(
-            this,
-           R.array.planets_array,
-            R.layout.spinner_item
-        ).also { adapter ->
-            // Specify the layout to use when the list of choices appears
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            // Apply the adapter to the spinner
-            spinner.adapter = adapter
+        var searchButton = findViewById<ImageView>(R.id.searchButton)
+        searchButton.setOnClickListener {
+            Log.d(TAG,spManager.getFilterValue().toString())
         }
-        spinner.onItemSelectedListener = SpinnerController()
-        spinner.setSelection( 0,true);
 
-
+        var mapSelectorButton = findViewById<Button>(R.id.mapSelectorButton)
+        mapSelectorButton.setOnClickListener {
+            val intent= Intent(this,MapViewController::class.java)
+            startActivity(intent)
+        }
        // newView!!.isVisible = false
         bundle = Bundle()
         UIHandler = @SuppressLint("HandlerLeak")
@@ -217,7 +213,7 @@ class CameraView : AppCompatActivity(){
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         Log.d(TAG,"onActivityResult called")
         super.onActivityResult(requestCode, resultCode, data)
-        var imageView = findViewById<ImageView>(R.id.imageView)
+        var imageView = findViewById<ImageView>(R.id.searchButton)
         when(requestCode ){
             CameraView.RESULT_LOAD_IMAGE ->{
                 val selectedImage = data!!.data
@@ -239,7 +235,7 @@ class CameraView : AppCompatActivity(){
                 var inputStream: InputStream? = contentResolver.openInputStream(cameraLib.getUri() as Uri)
                     ?: return
                 imageBuffer = BitmapFactory.decodeStream(inputStream)
-                var imgView = findViewById<ImageView>(R.id.imageView)
+                var imgView = findViewById<ImageView>(R.id.searchButton)
                 imgView.setImageBitmap(imageBuffer)
 
             }

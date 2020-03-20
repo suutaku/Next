@@ -19,7 +19,17 @@
             </intent-filter>
         </activity>
         <activity android:name=".CameraView" android:screenOrientation="fullSensor"></activity>
+        <activity android:name=".MapViewController" android:screenOrientation="fullSensor"></activity>
         <uses-library android:name="org.apache.http.legacy" android:required="false" />
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="VK3RBcwOwuv8TQ439qEalXWscxDaPepH">
+        </meta-data>
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote">
+        </service>
     </application>
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
@@ -27,6 +37,16 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET" />
+   <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位-->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
+    <!-- 获取运营商信息，用于支持提供运营商信息相关的接口-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+    <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
 
 </manifest>

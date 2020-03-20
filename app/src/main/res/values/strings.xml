@@ -6,8 +6,149 @@
     <string name="submit">提交</string>
     <string name="text_view" />
     <string name="search_hint">请选择筛选条件进行查询</string>
+    <string name="button">Button</string>
     <string-array name="planets_array">
+        <item>全部</item>
         <item>用户名</item>
         <item>Hash</item>
+    </string-array>
+    <string-array name="active_array">
+        <item>全部</item>
+        <item>党建</item>
+        <item>打卡</item>
+        <item>全部</item>
+    </string-array>
+    <string-array name="channel_array">
+        <item>全部</item>
+        <item>移动客户端</item>
+        <item>API</item>
+        <item>全部</item>
+    </string-array>
+    <string-array name="province_array">
+        <item>全部</item>
+        <item>河北</item>
+        <item>山西</item>
+        <item>辽宁</item>
+        <item>吉林</item>
+        <item>黑龙江</item>
+        <item>江苏</item>
+        <item>浙江</item>
+        <item>安徽</item>
+        <item>福建</item>
+        <item>台湾</item>
+        <item>江西</item>
+        <item>山东</item>
+        <item>河南</item>
+        <item>湖北</item>
+        <item>湖南</item>
+        <item>广东</item>
+        <item>海南</item>
+        <item>四川</item>
+        <item>贵州</item>
+        <item>云南</item>
+        <item>陕西</item>
+        <item>甘肃</item>
+        <item>青海</item>
+    </string-array>
+    <string-array name="city_sichuan_array">
+        <item>全部</item>
+        <item>成都</item>
+        <item>绵阳</item>
+        <item>自贡</item>
+        <item>攀枝花</item>
+        <item>泸州</item>
+        <item>德阳</item>
+        <item>广元</item>
+        <item>遂宁</item>
+        <item>内江</item>
+        <item>乐山</item>
+        <item>资阳</item>
+        <item>宜宾</item>
+        <item>南充</item>
+        <item>达州</item>
+        <item>雅安</item>
+        <item>阿坝</item>
+        <item>甘孜</item>
+        <item>凉山</item>
+        <item>广安</item>
+        <item>巴中</item>
+        <item>眉山</item>
+    </string-array>
+    <string-array name="area_chengdu_array">
+        <item>全部</item>
+        <item>武侯</item>
+        <item>锦江</item>
+        <item>青羊</item>
+        <item>金牛</item>
+        <item>成华</item>
+        <item>龙泉驿</item>
+        <item>温江</item>
+        <item>新都</item>
+        <item>青白江</item>
+        <item>双流</item>
+        <item>郫都</item>
+        <item>新津</item>
+        <item>大邑</item>
+        <item>金堂</item>
+        <item>浦江</item>
+        <item>都江堰</item>
+        <item>彭州</item>
+        <item>邛崃</item>
+        <item>崇州</item>
+        <item>简阳</item>
+    </string-array>
+    <string-array name="year_array">
+        <item>全部</item>
+        <item>2019</item>
+        <item>2020</item>
+    </string-array>
+    <string-array name="month_array">
+        <item>全部</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+    </string-array>
+    <string-array name="day_array">
+        <item>全部</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+        <item>24</item>
+        <item>25</item>
+        <item>26</item>
+        <item>27</item>
+        <item>28</item>
+        <item>29</item>
+        <item>30</item>
+        <item>31</item>
     </string-array>
 </resources>
