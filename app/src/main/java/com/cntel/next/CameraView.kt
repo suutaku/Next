@@ -143,6 +143,11 @@ class CameraView : AppCompatActivity(){
         var searchButton = findViewById<ImageView>(R.id.searchButton)
         searchButton.setOnClickListener {
             Log.d(TAG,spManager.getFilterValue().toString())
+
+            val intent= Intent(this,SmartScrollView::class.java)
+            intent.putExtra("FilterValue",spManager.getFilterValue().toString())
+            startActivity(intent)
+
         }
 
         var mapSelectorButton = findViewById<Button>(R.id.mapSelectorButton)

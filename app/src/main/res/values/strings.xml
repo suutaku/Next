@@ -8,21 +8,20 @@
     <string name="search_hint">请选择筛选条件进行查询</string>
     <string name="button">Button</string>
     <string-array name="planets_array">
-        <item>全部</item>
         <item>用户名</item>
         <item>Hash</item>
+        <item>全部</item>
     </string-array>
     <string-array name="active_array">
         <item>全部</item>
         <item>党建</item>
         <item>打卡</item>
-        <item>全部</item>
+
     </string-array>
     <string-array name="channel_array">
         <item>全部</item>
         <item>移动客户端</item>
         <item>API</item>
-        <item>全部</item>
     </string-array>
     <string-array name="province_array">
         <item>全部</item>
