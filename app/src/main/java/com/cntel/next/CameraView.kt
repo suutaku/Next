@@ -30,7 +30,14 @@ import java.net.HttpURLConnection
 import android.util.Base64
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import com.baidu.location.BDAbstractLocationListener
+import com.baidu.location.BDLocation
+import com.baidu.location.LocationClient
+import com.baidu.location.LocationClientOption
 import com.baidu.mapapi.SDKInitializer
+import com.baidu.mapapi.map.MapStatus
+import com.baidu.mapapi.map.MapStatusUpdateFactory
+import com.baidu.mapapi.map.MyLocationData
 import com.baidu.mapapi.model.LatLng
 import com.baidu.mapapi.search.core.SearchResult
 import com.baidu.mapapi.search.geocode.*
@@ -40,7 +47,7 @@ import org.w3c.dom.Text
 class CameraView : AppCompatActivity(){
     val TAG = "CameraView"
     private var cameraLib = CameraLib(this)
-
+    private lateinit var mLocationClient: LocationClient
     var sp: SharedPreferences? = null
     private var imageUri :Uri ? = null
     private var locationValue :String ? = null
@@ -79,6 +86,17 @@ class CameraView : AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.camera_view)
         SDKInitializer.initialize(applicationContext)
+        //定位初始化
+        mLocationClient = LocationClient(applicationContext)
+        mLocationClient.registerLocationListener(myLocationListener)
+        val option = LocationClientOption()
+        option.coorType = "bd09ll"
+        option.scanSpan = 0
+        option.openGps = true
+        mLocationClient.locOption = option
+        mLocationClient.start()
+
+
         var policy = StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         var menuButton = findViewById<Button>(R.id.menuButton)
@@ -160,15 +178,47 @@ class CameraView : AppCompatActivity(){
 
         supportActionBar?.hide()
         Log.d(TAG,"created")
-        val currentAPIVersion = android.os.Build.VERSION.SDK_INT
-//        var takeButton = findViewById<Button>(R.id.takePicture)
-        // Create persistent LocationManager reference
-        locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
-        try{
-            locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0f, locationListener)
-            locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener)
-        }catch (ex: SecurityException){
-            Log.d(TAG, "Security Exception, no location available")
+
+    }
+
+    private val myLocationListener = object : BDAbstractLocationListener() {
+        override fun onReceiveLocation(p0: BDLocation?) {
+            // text_map.setText("lat:$lat, long:$lng")
+            intent.putExtra("LatFromMap",p0!!.latitude)
+            intent.putExtra("LngFromMap",p0!!.longitude)
+            var geoCoder = GeoCoder.newInstance()
+            var op = ReverseGeoCodeOption()
+            op.location(LatLng(p0!!.latitude,p0!!.longitude))
+            val listener: OnGetGeoCoderResultListener = object : OnGetGeoCoderResultListener {
+                // 反地理编码查询结果回调函数
+                override fun onGetReverseGeoCodeResult(result: ReverseGeoCodeResult) {
+                    if (result == null
+                        || result.error != SearchResult.ERRORNO.NO_ERROR
+                    ) { // 没有检测到结果
+//                        Toast.makeText(
+//                            this@MapViewController, "抱歉，未能找到结果",
+//                            Toast.LENGTH_LONG
+//                        ).show()
+
+                    }
+//                    Toast.makeText(
+//                        this@MapViewController,
+//                        "位置：" + result.address, Toast.LENGTH_LONG
+//                    )
+//                        .show()
+                    intent.putExtra("AddressFromMap",result.address)
+                }
+
+                // 地理编码查询结果回调函数
+                override fun onGetGeoCodeResult(result: GeoCodeResult) {
+                    if (result == null
+                        || result.error != SearchResult.ERRORNO.NO_ERROR
+                    ) { // 没有检测到结果
+                    }
+                }
+            }
+            geoCoder.setOnGetGeoCodeResultListener(listener)
+            geoCoder.reverseGeoCode(op)
         }
 
     }
@@ -309,61 +359,6 @@ class CameraView : AppCompatActivity(){
             }
         }
     }
-
-
-
-    private val locationListener: LocationListener = object : LocationListener {
-        override fun onLocationChanged(location: Location) {
-
-            var geoCoder = GeoCoder.newInstance()
-            var op = ReverseGeoCodeOption()
-            op.location(LatLng(location.latitude,location.longitude))
-            intent.putExtra("LatFromMap",location.latitude)
-            intent.putExtra("LngFromMap",location.longitude)
-            val listener: OnGetGeoCoderResultListener = object : OnGetGeoCoderResultListener {
-                // 反地理编码查询结果回调函数
-                override fun onGetReverseGeoCodeResult(result: ReverseGeoCodeResult) {
-                    if (result == null
-                        || result.error != SearchResult.ERRORNO.NO_ERROR
-                    ) { // 没有检测到结果
-//                        Toast.makeText(
-//                            this@MapViewController, "抱歉，未能找到结果",
-//                            Toast.LENGTH_LONG
-//                        ).show()
-
-                    }
-//                    Toast.makeText(
-//                        this@MapViewController,
-//                        "位置：" + result.address, Toast.LENGTH_LONG
-//                    )
-//                        .show()
-                    intent.putExtra("AddressFromMap",result.address)
-                }
-
-                // 地理编码查询结果回调函数
-                override fun onGetGeoCodeResult(result: GeoCodeResult) {
-                    if (result == null
-                        || result.error != SearchResult.ERRORNO.NO_ERROR
-                    ) { // 没有检测到结果
-                    }
-                }
-            }
-            geoCoder.setOnGetGeoCodeResultListener(listener)
-            geoCoder.reverseGeoCode(op)
-
-
-        }
-        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
-            Log.d(TAG,provider+"in status $status")
-        }
-        override fun onProviderEnabled(provider: String) {
-            Log.d(TAG, "$provider disable")
-        }
-        override fun onProviderDisabled(provider: String) {
-            Log.d(TAG, "$provider enable")
-        }
-    }
-
 
     private fun confirmedAndSubmit(){
         Log.d(TAG,"confirmedAndSubmit")

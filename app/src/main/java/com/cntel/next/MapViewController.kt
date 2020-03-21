@@ -32,7 +32,6 @@ class MapViewController : AppCompatActivity() {
     @SuppressLint("WorldWriteableFiles")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
         setContentView(R.layout.map_view)
 
         //back
