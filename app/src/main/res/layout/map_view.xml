@@ -21,12 +21,5 @@
 
     </RelativeLayout>
 
-    <ImageView
-        android:id="@+id/back"
-        android:layout_width="55dp"
-        android:layout_height="49dp"
-        android:background="@drawable/back"
-        tools:ignore="MissingConstraints" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

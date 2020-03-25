@@ -2,6 +2,8 @@ package com.cntel.next
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
@@ -21,28 +23,21 @@ import com.baidu.mapapi.search.geocode.*
 import com.github.promeg.pinyinhelper.Pinyin
 
 
-class MapViewController : AppCompatActivity() {
+class MapViewController(baseCon: Context,context: AlertDialog) : AppCompatActivity() {
     private lateinit var mLocationClient: LocationClient
     lateinit var baiduMap: BaiduMap
     private var mapView: MapView? = null
-
-    @SuppressLint("WorldWriteableFiles")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.map_view)
-
-        //back
-        var backButton = findViewById<ImageView>(R.id.back)
-        backButton.setOnClickListener {
-            val intent= Intent(this,CameraView::class.java)
-            startActivity(intent)
+    private var mContext = context
+    private var mBaseContext = baseCon
+    fun init(){
+        var cancelButton =  mContext.getButton(DialogInterface.BUTTON_NEGATIVE)
+        cancelButton?.setOnClickListener {
+            mContext.dismiss()
         }
 
-
-
-        mapView = findViewById<MapView>(R.id.bMapView2)
+        mapView = mContext.findViewById<MapView>(R.id.bMapView2)
         //定位初始化
-        mLocationClient = LocationClient(applicationContext)
+        mLocationClient = LocationClient(mBaseContext.applicationContext)
         mLocationClient.registerLocationListener(myLocationListener)
         val option = LocationClientOption()
         option.coorType = "bd09ll"
@@ -92,6 +87,7 @@ class MapViewController : AppCompatActivity() {
         }
     }
 
+
     private val myLocationListener = object : BDAbstractLocationListener() {
         override fun onReceiveLocation(p0: BDLocation?) {
             val lat = p0!!.latitude
@@ -136,7 +132,7 @@ class MapViewController : AppCompatActivity() {
             Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE)
-        ActivityCompat.requestPermissions(this, mPermissionList, 123)
+        ActivityCompat.requestPermissions(mBaseContext as Activity, mPermissionList, 123)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -144,13 +140,13 @@ class MapViewController : AppCompatActivity() {
         mLocationClient.restart()
     }
     fun showAlterDialog(result: ReverseGeoCodeResult){
-        var dLog = AlertDialog.Builder(this)
+        var dLog = AlertDialog.Builder(mBaseContext)
         dLog.setTitle("确认信息")
         if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR){
             dLog.setMessage("未能获取地址信息")
             dLog.setPositiveButton("确定",
                 DialogInterface.OnClickListener{ _: DialogInterface, _: Int ->
-                    startActivity(intent)
+
                 }
             )
         }else{
@@ -161,14 +157,15 @@ class MapViewController : AppCompatActivity() {
 
             dLog.setPositiveButton("确认",
                 DialogInterface.OnClickListener { _: DialogInterface, _: Int ->
-                    val intent= Intent(this,CameraView::class.java)
+                    var act = mBaseContext as Activity
+                    val intent= act.intent
                     intent.putExtra("LatFromMapSelect",result.location.latitude)
                     intent.putExtra("LngFromMapSelect",result.location.longitude)
                     intent.putExtra("AddressFromMapSelect",result.address)
                     intent.putExtra("AddressFromMapProvinceSelect",Pinyin.toPinyin(result.addressDetail.province,"").toLowerCase())
                     intent.putExtra("AddressFromMapCitySelect",Pinyin.toPinyin(result.addressDetail.city,"").toLowerCase())
                     intent.putExtra("AddressFromMapAreaSelect",Pinyin.toPinyin(result.addressDetail.district,"").toLowerCase())
-                    startActivity(intent)
+
                 })
         }
 

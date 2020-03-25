@@ -165,30 +165,31 @@ class CameraView : AppCompatActivity(){
 
         var mapSelectorButton = findViewById<Button>(R.id.mapSelectorButton)
         mapSelectorButton.setOnClickListener {
-            val intent= Intent(this,MapViewController::class.java)
-            startActivity(intent)
-
-
             var resultDialog = AlertDialog.Builder(this)
             resultDialog.setTitle("选择地址")
             resultDialog.setView(R.layout.map_view)
             resultDialog.setPositiveButton("确定", null)
             resultDialog.setNegativeButton("取消",null)
+            resultDialog.setOnDismissListener{
+                var regLat = intent.getDoubleExtra("LatFromMapSelect",-1.0)
+                var regLng = intent.getDoubleExtra("LngFromMapSelect",-1.0)
+                if(regLat != -1.0 && regLng != -1.0){
+                    var lngEdit = findViewById<EditText>(R.id.lngEdit)
+                    var latEdit = findViewById<EditText>(R.id.latEdit)
+                    var adressD = findViewById<TextView>(R.id.adressDisplay)
+                    var addressStr = intent.getStringExtra("AddressFromMapSelect")
+                    latEdit.text = Editable.Factory.getInstance().newEditable(regLat.toString())
+                    lngEdit.text = Editable.Factory.getInstance().newEditable(regLng.toString())
+                    adressD.text = addressStr
+                }
+            }
             var viewTmp = resultDialog.show()
+            var mapViewCtl = MapViewController(this,viewTmp)
+            mapViewCtl.init()
+
 
         }
 
-        var regLat = intent.getDoubleExtra("LatFromMapSelect",-1.0)
-        var regLng = intent.getDoubleExtra("LngFromMapSelect",-1.0)
-        if(regLat != -1.0 && regLng != -1.0){
-            var lngEdit = findViewById<EditText>(R.id.lngEdit)
-            var latEdit = findViewById<EditText>(R.id.latEdit)
-            var adressD = findViewById<TextView>(R.id.adressDisplay)
-            var addressStr = intent.getStringExtra("AddressFromMapSelect")
-            latEdit.text = Editable.Factory.getInstance().newEditable(regLat.toString())
-            lngEdit.text = Editable.Factory.getInstance().newEditable(regLng.toString())
-            adressD.text = addressStr
-        }
 
         var takePicture = findViewById<Button>(R.id.takePictrue)
         takePicture.setOnClickListener {
