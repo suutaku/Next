@@ -1,4 +1,8 @@
 <resources>
+    <string name="test_chain_server">http://192.168.0.180:26657</string>
+    <string name="chain_server">http://demo.cotnetwork.xyz:26657</string>
+    <string name="cluster_server">http://demo.cotnetwork.xyz:30000</string>
+    <string name="storage_node">http://demo.cotnetwork.xyz:30001</string>
     <string name="app_name">Next</string>
     <string name="takePicture">拍照</string>
     <string name="imageView">TODO</string>

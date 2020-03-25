@@ -6,10 +6,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.text.Editable
-import android.widget.EditText
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -17,7 +14,6 @@ import com.baidu.location.BDAbstractLocationListener
 import com.baidu.location.BDLocation
 import com.baidu.location.LocationClient
 import com.baidu.location.LocationClientOption
-import com.baidu.mapapi.SDKInitializer
 import com.baidu.mapapi.map.*
 import com.baidu.mapapi.model.LatLng
 import com.baidu.mapapi.search.core.SearchResult
@@ -43,7 +39,7 @@ class MapViewController : AppCompatActivity() {
 
 
 
-        mapView = findViewById<MapView>(R.id.bMapView)
+        mapView = findViewById<MapView>(R.id.bMapView2)
         //定位初始化
         mLocationClient = LocationClient(applicationContext)
         mLocationClient.registerLocationListener(myLocationListener)

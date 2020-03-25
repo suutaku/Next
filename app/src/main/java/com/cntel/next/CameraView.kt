@@ -1,11 +1,13 @@
 package com.cntel.next
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -41,8 +43,10 @@ import com.baidu.mapapi.map.MyLocationData
 import com.baidu.mapapi.model.LatLng
 import com.baidu.mapapi.search.core.SearchResult
 import com.baidu.mapapi.search.geocode.*
+import com.github.promeg.pinyinhelper.Pinyin
 import org.json.JSONArray
 import org.w3c.dom.Text
+import java.nio.ByteBuffer
 
 class CameraView : AppCompatActivity(){
     val TAG = "CameraView"
@@ -60,13 +64,10 @@ class CameraView : AppCompatActivity(){
         var MESSAGE_BLOCK_SUBMIT = 3
         var MESSAGE_PROGRESS_END = 4
     }
-    var submitButton :Button ? = null
-    var logoutButton :Button ? = null
-    var mainHost = "http://demo.cotnetwork.xyz"
-    var uploadURL = "$mainHost:30001/api/v0/add"
-    var blockCommitURL = "$mainHost:26657/broadcast_tx_commit?tx="
-   // var blockCommitURL = "http://192.168.0.179:26657/broadcast_tx_commit?tx="
-    var clusterReportURL = "$mainHost:30000/pins/"
+
+    var uploadURL: String? = null
+    var blockCommitURL: String? = null
+    var clusterReportURL: String? = null
     //var attachmentFileName = file_name_with_ext;
     var crlf = "\r\n";
     var twoHyphens = "--";
@@ -85,6 +86,11 @@ class CameraView : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.camera_view)
+
+        uploadURL = getString(R.string.storage_node)+"/api/v0/add"
+        clusterReportURL = getString(R.string.cluster_server)+"/pins/"
+        blockCommitURL = getString(R.string.test_chain_server)+"/broadcast_tx_commit?tx="
+
         SDKInitializer.initialize(applicationContext)
         //定位初始化
         mLocationClient = LocationClient(applicationContext)
@@ -145,6 +151,14 @@ class CameraView : AppCompatActivity(){
             Log.d(TAG,spManager.getFilterValue().toString())
 
             val intent= Intent(this,SmartScrollView::class.java)
+            //check filter value
+            if(!checkFilterValue(spManager.getFilterValue())){
+                Toast.makeText(
+                    this@CameraView, "请输入合法的关键字进行搜索！",
+                    Toast.LENGTH_LONG
+                ).show()
+                return@setOnClickListener
+            }
             intent.putExtra("FilterValue",spManager.getFilterValue().toString())
             startActivity(intent)
 
@@ -186,6 +200,28 @@ class CameraView : AppCompatActivity(){
 
     }
 
+    private fun checkFilterValue(input: JSONObject): Boolean{
+        if(input == null){
+            return false
+        }
+        if(!input.has("MainKey")){
+            return false
+        }
+
+        if(input.getString("MainKey") != "全部"){
+            if(!input.has("MainValue")){
+                return false
+            }
+            if( input.getString("MainValue") == ""){
+                return false
+            }
+        }else{
+
+        }
+
+        return true
+    }
+
     private val myLocationListener = object : BDAbstractLocationListener() {
         override fun onReceiveLocation(p0: BDLocation?) {
             // text_map.setText("lat:$lat, long:$lng")
@@ -197,28 +233,22 @@ class CameraView : AppCompatActivity(){
             val listener: OnGetGeoCoderResultListener = object : OnGetGeoCoderResultListener {
                 // 反地理编码查询结果回调函数
                 override fun onGetReverseGeoCodeResult(result: ReverseGeoCodeResult) {
-                    if (result == null
-                        || result.error != SearchResult.ERRORNO.NO_ERROR
-                    ) { // 没有检测到结果
-//                        Toast.makeText(
-//                            this@MapViewController, "抱歉，未能找到结果",
-//                            Toast.LENGTH_LONG
-//                        ).show()
+                    if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) { // 没有检测到结果
 
                     }
-//                    Toast.makeText(
-//                        this@MapViewController,
-//                        "位置：" + result.address, Toast.LENGTH_LONG
-//                    )
-//                        .show()
+
                     intent.putExtra("AddressFromMap",result.address)
+                    intent.putExtra("AddressFromMapProvince",Pinyin.toPinyin(result.addressDetail.province,"").toLowerCase())
+                    intent.putExtra("AddressFromMapCity",Pinyin.toPinyin(result.addressDetail.city,"").toLowerCase())
+                    intent.putExtra("AddressFromMapArea",Pinyin.toPinyin(result.addressDetail.district,"").toLowerCase())
+                    intent.putExtra("AddressFromMapStreet",Pinyin.toPinyin(result.addressDetail.street,"").toLowerCase())
+                    intent.putExtra("AddressFromMapNumber",Pinyin.toPinyin(result.addressDetail.streetNumber,"").toLowerCase())
+
                 }
 
                 // 地理编码查询结果回调函数
                 override fun onGetGeoCodeResult(result: GeoCodeResult) {
-                    if (result == null
-                        || result.error != SearchResult.ERRORNO.NO_ERROR
-                    ) { // 没有检测到结果
+                    if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) { // 没有检测到结果
                     }
                 }
             }
@@ -228,30 +258,30 @@ class CameraView : AppCompatActivity(){
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun constructConfirmInfo(){
-        var confirmUserName = findViewById<TextView>(R.id.confirmUserName)
-        var confirmAddress = findViewById<TextView>(R.id.confirmAddress)
-        var confirmLatlng = findViewById<TextView>(R.id.confirmLatlng)
-        var confirmDate = findViewById<TextView>(R.id.confirmDate)
-        var confirmPermission = findViewById<TextView>(R.id.confirmPermission)
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun constructConfirmInfo(act: AlertDialog){
+        var confirmUserName = act.findViewById<TextView>(R.id.confirmUserName)
+        var confirmAddress = act.findViewById<TextView>(R.id.confirmAddress)
+        var confirmLatlng = act.findViewById<TextView>(R.id.confirmLatlng)
+        var confirmDate = act.findViewById<TextView>(R.id.confirmDate)
+        var confirmPermission = act.findViewById<TextView>(R.id.confirmPermission)
 
-        confirmUserName.text =  intent.getStringExtra("UserName")
-        confirmAddress.text =  intent.getStringExtra("AddressFromMap")
-        confirmLatlng.text =  intent.getDoubleExtra("LatFromMap",-1.0).toString() +" "+ intent.getDoubleExtra("LngFromMap",-1.0)
-        val simpleDateFormat = SimpleDateFormat("yyyy_MM_dd_mm_ss")
+        confirmUserName?.text =  intent.getStringExtra("UserName")
+        confirmAddress?.text =  intent.getStringExtra("AddressFromMap")
+        confirmLatlng?.text =  intent.getDoubleExtra("LatFromMap",-1.0).toString() +" "+ intent.getDoubleExtra("LngFromMap",-1.0)
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         val current = simpleDateFormat.format(Date())
-        confirmDate.text = current.toString()
-        confirmPermission.text = "管理员"
+        confirmDate?.text = current.toString()
+        confirmPermission?.text = "管理员"
 
-        var cancelButton = findViewById<Button>(R.id.cancelSubmit)
-        cancelButton.setOnClickListener {
-            setContentView(R.layout.camera_view)
+        var cancelButton =  act.getButton(DialogInterface.BUTTON_NEGATIVE)
+        cancelButton?.setOnClickListener {
+            act.dismiss()
         }
-        var sumitButton = findViewById<Button>(R.id.submit)
-        sumitButton.setOnClickListener {
+        var sumitButton =  act.getButton(DialogInterface.BUTTON_POSITIVE)
+        sumitButton?.setOnClickListener {
             Log.d(TAG,"sumitButton clicked")
-            if(confirmAddress.text == "") {
+            if(confirmAddress?.text == "") {
                 confirmAddress.text = intent.getStringExtra("AddressFromMap")
                 Toast.makeText(
                     this@CameraView, "正在获取地址信息",
@@ -261,7 +291,7 @@ class CameraView : AppCompatActivity(){
                 return@setOnClickListener
             }
 
-            if(confirmLatlng.text == "") {
+            if(confirmLatlng?.text == "") {
                 confirmLatlng.text =  intent.getDoubleExtra("LatFromMap",-1.0).toString() +" "+ intent.getDoubleExtra("LngFromMap",-1.0)
                 Toast.makeText(
                     this@CameraView, "正在获取定位信息",
@@ -302,14 +332,16 @@ class CameraView : AppCompatActivity(){
                         dLog.setPositiveButton("确定",
                             DialogInterface.OnClickListener { dialog: DialogInterface, _: Int ->
                                 dialog.dismiss()
-                                return@OnClickListener })
+                                return@OnClickListener
+                            })
                         dIn = dLog.show()
                     } else {
                         dIn.dismiss()
                         dLog.setMessage("错误！！！")
                         dLog.setPositiveButton("确定",
                             DialogInterface.OnClickListener { _: DialogInterface, _: Int ->
-                                return@OnClickListener })
+                                return@OnClickListener
+                            })
                         dIn = dLog.show()
                     }
                 }
@@ -318,35 +350,49 @@ class CameraView : AppCompatActivity(){
                 Log.d(TAG,"run main process")
                 confirmedAndSubmit()
             }.start()
+            act.dismiss()
 
 
         }
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         Log.d(TAG,"onActivityResult called")
         super.onActivityResult(requestCode, resultCode, data)
-
+            var viewTmp: AlertDialog? = null
         when(requestCode ){
             CameraView.RESULT_LOAD_IMAGE ->{
-                setContentView(R.layout.info_confirm_view)
-                constructConfirmInfo()
-                val selectedImage = data!!.data
-                val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
-                val cursor = contentResolver.query(selectedImage,
-                    filePathColumn, null, null, null)
-                cursor.moveToFirst()
-                val columnIndex = cursor.getColumnIndex(filePathColumn[0])
-                val picturePath = cursor.getString(columnIndex)
-                cursor.close()
-                var imageView = findViewById<ImageView>(R.id.imageDisplay)
-                imageView.background = Drawable.createFromPath(picturePath)
+                if(data == null){
+                    return
+                }
+                var resultDialog = AlertDialog.Builder(this)
+                resultDialog.setTitle("详细信息")
+                resultDialog.setView(R.layout.info_confirm_view)
+                resultDialog.setPositiveButton("确定", null)
+                resultDialog.setNegativeButton("取消",null)
+                var viewTmp = resultDialog.show()
+
+                constructConfirmInfo(viewTmp)
+                var inputStream: InputStream? = contentResolver.openInputStream(data!!.data)
+                    ?: return
+                imageBuffer = BitmapFactory.decodeStream(inputStream)
+                var imageView = viewTmp.findViewById<ImageView>(R.id.imageDisplay)
+                imageView?.setImageBitmap(imageBuffer)
             }
             CameraView.RESULT_TAKE_PHOTO ->{
-                setContentView(R.layout.info_confirm_view)
-                constructConfirmInfo()
+                if(cameraLib.getUri()  == null){
+                    return
+                }
+                var resultDialog = AlertDialog.Builder(this)
+
+                resultDialog.setView(R.layout.info_confirm_view)
+                resultDialog.setTitle("详细信息")
+                resultDialog.setPositiveButton("确定", null)
+                resultDialog.setNegativeButton("取消",null)
+                var viewTmp = resultDialog.show()
+                constructConfirmInfo(viewTmp)
                 if(resultCode != RESULT_OK){
                     Log.e(TAG,"RESULT_TAKE_PHOTO NOT OK")
                     return
@@ -355,8 +401,8 @@ class CameraView : AppCompatActivity(){
                 var inputStream: InputStream? = contentResolver.openInputStream(cameraLib.getUri() as Uri)
                     ?: return
                 imageBuffer = BitmapFactory.decodeStream(inputStream)
-                var imageView = findViewById<ImageView>(R.id.imageDisplay)
-                imageView.setImageBitmap(imageBuffer)
+                var imageView = viewTmp.findViewById<ImageView>(R.id.imageDisplay)
+                imageView?.setImageBitmap(imageBuffer)
 
             }
             else ->{
@@ -365,6 +411,7 @@ class CameraView : AppCompatActivity(){
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun confirmedAndSubmit(){
         Log.d(TAG,"confirmedAndSubmit")
         var msg = Message()
@@ -377,10 +424,18 @@ class CameraView : AppCompatActivity(){
         //upload images
             //report cluster
             //report detection server
+        var byteArrayOutputStream =  ByteArrayOutputStream()
+        imageBuffer?.compress(Bitmap.CompressFormat.JPEG,100,byteArrayOutputStream)
+        var fileHash = doUpload(byteArrayOutputStream.toByteArray())
+
+        var resized = Bitmap.createScaledBitmap(imageBuffer, imageBuffer!!.width/8, imageBuffer!!.height/8, true)
+        resized?.compress(Bitmap.CompressFormat.JPEG,100,byteArrayOutputStream)
+        var previewHash = doUpload(byteArrayOutputStream.toByteArray())
         var msg3 = Message()
         msg3.what = MESSAGE_BLOCK_SUBMIT
         UIHandler?.sendMessage(msg3)
         //submit block
+        submitTransaction(fileHash,previewHash)
         var msg4 = Message()
         msg4.what = MESSAGE_PROGRESS_END
         UIHandler?.sendMessage(msg4)
@@ -437,73 +492,6 @@ class CameraView : AppCompatActivity(){
             return jObj.getString("Hash")
         }
     }
-    @RequiresApi(Build.VERSION_CODES.O)
-//    private fun uploadImage(){
-//        if(locationBuffer[0] == null || locationBuffer[1] == null || (locationBuffer[0] == 0.0 && locationBuffer[1] == 0.0)){
-//            return
-//        }
-//
-//        var msg = Message()
-//        msg.what = MESSAGE_SHOW_INFO_DISPLAY
-//        UIHandler?.sendMessage(msg)
-//        var msg2 = Message()
-//        msg2.what = MESSAGE_UPDATE_INFO_DISPLAY
-//        bundle?.putString("MESSAGE_UPDATE_INFO_DISPLAY","图像准备中...")
-//        UIHandler?.sendMessage(msg2)
-//
-//        val stream = ByteArrayOutputStream()
-//        imageBuffer?.compress(Bitmap.CompressFormat.PNG, 90, stream)
-//        var originalData = stream.toByteArray()
-//        Log.i(TAG,"Image compressed")
-//        var msg3 = Message()
-//        msg3.what = MESSAGE_UPDATE_INFO_DISPLAY
-//        bundle?.putString("MESSAGE_UPDATE_INFO_DISPLAY","生成预览图像...")
-//        UIHandler?.sendMessage(msg3)
-//
-//        var previewmap = Bitmap.createScaledBitmap(imageBuffer, imageBuffer!!.width/8, imageBuffer!!.height/8, false)
-//        if(previewmap.width < previewmap.height){
-//            var matrix = Matrix();
-//            matrix.postRotate(90F);
-//            previewmap = Bitmap.createBitmap(previewmap, 0, 0, previewmap.width, previewmap.height, matrix, true);
-//        }
-//
-//        var msg4 = Message()
-//        msg4.what = MESSAGE_UPDATE_INFO_DISPLAY
-//        bundle?.putString("MESSAGE_UPDATE_INFO_DISPLAY","图像上传中...")
-//        UIHandler?.sendMessage(msg4)
-//        var stream2 = ByteArrayOutputStream()
-//        Log.i(TAG,"Image resized")
-//        previewmap?.compress(Bitmap.CompressFormat.JPEG, 90, stream2)
-//        Log.i(TAG,"Image compressed to jpeg")
-//        var previewData = stream2.toByteArray()
-//        Log.i(TAG,"toByteArray")
-//        var fileHash = doUpload(originalData)
-//        Log.i(TAG,"Original image uploaded")
-//       var previewHash = doUpload(previewData)
-//        Log.i(TAG,"Preview image uploaded")
-//        var msg5 = Message()
-//        msg5.what = MESSAGE_UPDATE_INFO_DISPLAY
-//        bundle?.putString("MESSAGE_UPDATE_INFO_DISPLAY","区块提交中...")
-//        UIHandler?.sendMessage(msg5)
-//
-//        var ret = submitTransaction(fileHash,previewHash)
-//        var msg6 = Message()
-//        msg6.what = MESSAGE_UPDATE_INFO_DISPLAY
-//        bundle?.putString("MESSAGE_UPDATE_INFO_DISPLAY", "区块提交完成！！！")
-//        UIHandler?.sendMessage(msg6)
-//        var msg7 = Message()
-//        msg7.what = MESSAGE_HIDE_INFO_DISPLAY
-//        UIHandler?.sendMessage(msg7)
-//        var msg71 = Message()
-//        msg71.what = MESSAGE_NOTIFICATION
-//        bundle?.putString("MESSAGE_NOTIFICATION", "生成区块：${ret?.getJSONObject("result")?.getString("hash")}\n高度：${ret?.getJSONObject("result")?.getString("height")}")
-//        UIHandler?.sendMessage(msg71)
-//        var msg8 = Message()
-//        msg8.what = MESSAGE_REST_VIEWS
-//        UIHandler?.sendMessage(msg8)
-//
-//
-//    }
     private fun reportCluster(hash: String){
         val serverURL: String = clusterReportURL+hash
         Log.i(TAG,serverURL)
@@ -534,14 +522,22 @@ class CameraView : AppCompatActivity(){
         postObj.put("FileHash",fileHash)
         postObj.put("FilePreviewHash",previewHash)
         postObj.put("Type","Transaction")
-        var array = JSONArray();
-        array.put(locationBuffer[0])
-        array.put(locationBuffer[1])
-        postObj.put("Location",array)
-        postObj.put("User",userNameBuffer)
-        val simpleDateFormat = SimpleDateFormat("yyyy_MM_dd_mm_ss")
+        var tmpLI = JSONObject()
+        tmpLI.put("Latitude",intent.getDoubleExtra("LatFromMap",-1.0))
+        tmpLI.put("Longitude",intent.getDoubleExtra("LngFromMap",-1.0))
+        tmpLI.put("Province",intent.getStringExtra("AddressFromMapProvince"))
+        tmpLI.put("City",intent.getStringExtra("AddressFromMapCity"))
+        tmpLI.put("Area",intent.getStringExtra("AddressFromMapArea"))
+        tmpLI.put("Street",intent.getStringExtra("AddressFromMapStreet"))
+        tmpLI.put("Number",intent.getStringExtra("AddressFromMapNumber"))
+        postObj.put("Location",tmpLI)
+        postObj.put("User",intent.getStringExtra("UserName"))
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         val current = simpleDateFormat.format(Date())
         postObj.put("Date", current.toString())
+        postObj.put("TransactionTag","daka")
+        postObj.put("Channel","mobile")
+        postObj.put("FileType","image")
         var reqString = postObj.toString()
         Log.i(TAG,reqString)
         var b64 = Base64.encodeToString(reqString.toByteArray(),Base64.DEFAULT)

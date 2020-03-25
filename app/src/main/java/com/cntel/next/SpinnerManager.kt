@@ -4,15 +4,15 @@ import android.app.Activity
 import android.content.Context
 import android.util.Log
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.github.promeg.pinyinhelper.Pinyin
 import org.json.JSONObject
 
 class SpinnerManager(context: Context) : AppCompatActivity() {
     private var con = context
     private var act = context as Activity
+    private var mainTextValue: EditText? = null
     private var spinner: Spinner? =  null //findViewById(R.id.planets_spinner)
     private var spinnerActive: Spinner? = null // = act.findViewById(R.id.spinner_active_type)
     private var spinnerChannel: Spinner? = null // = findViewById(R.id.spinner_channel)
@@ -45,11 +45,13 @@ class SpinnerManager(context: Context) : AppCompatActivity() {
     }
 
     fun getFilterValue() :JSONObject{
+        mFilterValue.put("MainValue",mainTextValue!!.text.toString())
         return mFilterValue
     }
 
     fun init(){
         // search
+        mainTextValue = act.findViewById<EditText>(R.id.mainValue)
         spinner = makeSpinner(R.id.planets_spinner,R.layout.spinner_item,R.array.planets_array)
         spinner!!.onItemSelectedListener = object :AdapterView.OnItemSelectedListener {
 
@@ -74,7 +76,11 @@ class SpinnerManager(context: Context) : AppCompatActivity() {
             override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
                 // An item was selected. You can retrieve the selected item using
                 // parent.getItemAtPosition(pos)
-                mFilterValue.put("ActiveType",parent.getItemAtPosition(pos).toString())
+                var selectValue = parent.getItemAtPosition(pos).toString()
+                if(selectValue != "全部"){
+                    selectValue = Pinyin.toPinyin(selectValue,"").toLowerCase()
+                }
+                mFilterValue.put("ActiveType",selectValue)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
@@ -90,7 +96,15 @@ class SpinnerManager(context: Context) : AppCompatActivity() {
             override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
                 // An item was selected. You can retrieve the selected item using
                 // parent.getItemAtPosition(pos)
-                mFilterValue.put("Channel",parent.getItemAtPosition(pos).toString())
+                var valueTmp = parent.getItemAtPosition(pos).toString()
+                if(valueTmp == "移动客户端"){
+                    mFilterValue.put("Channel","mobile")
+                }else if (valueTmp == "API"){
+                    mFilterValue.put("Channel","api")
+                }else{
+                    mFilterValue.put("Channel",valueTmp)
+                }
+
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
@@ -99,30 +113,43 @@ class SpinnerManager(context: Context) : AppCompatActivity() {
             }
         }
         spinnerChannel!!.setSelection( 0,true);
-
+        mFilterValue.put("Province","全部")
+        mFilterValue.put("City","全部")
+        mFilterValue.put("Area","全部")
         spinnerProvince = makeSpinner(R.id.spinner_province,R.layout.spinner_item_2,R.array.province_array)
         spinnerProvince!!.onItemSelectedListener = object :AdapterView.OnItemSelectedListener {
-
             override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
                 // An item was selected. You can retrieve the selected item using
                 // parent.getItemAtPosition(pos)
-                var electedValue = parent.getItemAtPosition(pos).toString()
-                mFilterValue.put("Province",electedValue)
-                if(electedValue == "四川"){
+                var selectedValue = parent.getItemAtPosition(pos).toString()
+                if(selectedValue != "全部"){
+                    selectedValue = Pinyin.toPinyin(selectedValue,"").toLowerCase()
+                }
+                mFilterValue.put("Province",selectedValue)
+                if(selectedValue == "sichuan"){
                     spinnerCity = makeSpinner(R.id.spinner_city,R.layout.spinner_item_2,R.array.city_sichuan_array)
                     spinnerCity!!.onItemSelectedListener = object :AdapterView.OnItemSelectedListener {
 
                         override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
                             // An item was selected. You can retrieve the selected item using
                             // parent.getItemAtPosition(pos)
-                            mFilterValue.put("City",parent.getItemAtPosition(pos).toString())
+                            var selectCity = parent.getItemAtPosition(pos).toString()
+                            if(selectCity != "全部"){
+                                selectCity = Pinyin.toPinyin(selectCity,"").toLowerCase()
+                            }
+                            mFilterValue.put("City",selectCity)
                             spinnerArea = makeSpinner(R.id.spinner_area,R.layout.spinner_item_2,R.array.area_chengdu_array)
                             spinnerArea!!.onItemSelectedListener = object :AdapterView.OnItemSelectedListener {
 
                                 override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
                                     // An item was selected. You can retrieve the selected item using
                                     // parent.getItemAtPosition(pos)
-                                    mFilterValue.put("Area",parent.getItemAtPosition(pos).toString())
+                                    var selectArea = parent.getItemAtPosition(pos).toString()
+                                    if(selectArea != "全部"){
+                                        selectArea = Pinyin.toPinyin(selectArea,"").toLowerCase()
+                                    }
+                                    mFilterValue.put("Area",selectArea)
+
                                 }
                                 override fun onNothingSelected(parent: AdapterView<*>) {
                                     // Another interface callback
@@ -146,6 +173,10 @@ class SpinnerManager(context: Context) : AppCompatActivity() {
         }
         spinnerProvince!!.setSelection( 0,true);
 
+
+        mFilterValue.put("YearStart","全部")
+        mFilterValue.put("MonthStart","01")
+        mFilterValue.put("DayStart","01")
         spinnerYearStart = makeSpinner(R.id.spinner_year_start,R.layout.spinner_item_2,R.array.year_array)
         spinnerYearStart!!.onItemSelectedListener = object :AdapterView.OnItemSelectedListener {
 
@@ -153,6 +184,37 @@ class SpinnerManager(context: Context) : AppCompatActivity() {
                 // An item was selected. You can retrieve the selected item using
                 // parent.getItemAtPosition(pos)
                 mFilterValue.put("YearStart",parent.getItemAtPosition(pos).toString())
+                spinnerMonthStart = makeSpinner(R.id.spinner_month_start,R.layout.spinner_item_2,R.array.month_array)
+                spinnerMonthStart!!.onItemSelectedListener = object :AdapterView.OnItemSelectedListener {
+
+                    override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
+                        // An item was selected. You can retrieve the selected item using
+                        // parent.getItemAtPosition(pos)
+
+                        mFilterValue.put("MonthStart",parent.getItemAtPosition(pos).toString())
+                        spinnerDayStart = makeSpinner(R.id.spinner_day_start,R.layout.spinner_item_2,R.array.day_array)
+                        spinnerDayStart!!.onItemSelectedListener = object :AdapterView.OnItemSelectedListener {
+
+                            override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
+                                // An item was selected. You can retrieve the selected item using
+                                // parent.getItemAtPosition(pos)
+                                mFilterValue.put("DayStart",parent.getItemAtPosition(pos).toString())
+                            }
+
+                            override fun onNothingSelected(parent: AdapterView<*>) {
+                                // Another interface callback
+                                Log.d(TAG,"nothing selected")
+                            }
+                        }
+                        spinnerDayStart!!.setSelection( 0,true);
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>) {
+                        // Another interface callback
+                        Log.d(TAG,"nothing selected")
+                    }
+                }
+                spinnerMonthStart!!.setSelection( 0,true);
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
@@ -162,14 +224,49 @@ class SpinnerManager(context: Context) : AppCompatActivity() {
         }
         spinnerYearStart!!.setSelection( 0,true);
 
-
+        mFilterValue.put("YearEnd","全部")
+        mFilterValue.put("MonthEnd","12")
+        mFilterValue.put("DayEnd","31")
         spinnerYearEnd = makeSpinner(R.id.spinner_year_end,R.layout.spinner_item_2,R.array.year_array)
         spinnerYearEnd!!.onItemSelectedListener = object :AdapterView.OnItemSelectedListener {
+
             override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
                 // An item was selected. You can retrieve the selected item using
                 // parent.getItemAtPosition(pos)
                 mFilterValue.put("YearEnd",parent.getItemAtPosition(pos).toString())
+                spinnerMonthEnd = makeSpinner(R.id.spinner_month_end,R.layout.spinner_item_2,R.array.month_array)
+                spinnerMonthEnd!!.onItemSelectedListener = object :AdapterView.OnItemSelectedListener {
+
+                    override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
+                        // An item was selected. You can retrieve the selected item using
+                        // parent.getItemAtPosition(pos)
+
+                        mFilterValue.put("MonthEnd",parent.getItemAtPosition(pos).toString())
+                        spinnerDayEnd = makeSpinner(R.id.spinner_day_end,R.layout.spinner_item_2,R.array.day_array)
+                        spinnerDayEnd!!.onItemSelectedListener = object :AdapterView.OnItemSelectedListener {
+
+                            override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
+                                // An item was selected. You can retrieve the selected item using
+                                // parent.getItemAtPosition(pos)
+                                mFilterValue.put("DayEnd",parent.getItemAtPosition(pos).toString())
+                            }
+
+                            override fun onNothingSelected(parent: AdapterView<*>) {
+                                // Another interface callback
+                                Log.d(TAG,"nothing selected")
+                            }
+                        }
+                        spinnerDayEnd!!.setSelection( 0,true);
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>) {
+                        // Another interface callback
+                        Log.d(TAG,"nothing selected")
+                    }
+                }
+                spinnerMonthEnd!!.setSelection( 0,true);
             }
+
             override fun onNothingSelected(parent: AdapterView<*>) {
                 // Another interface callback
                 Log.d(TAG,"nothing selected")

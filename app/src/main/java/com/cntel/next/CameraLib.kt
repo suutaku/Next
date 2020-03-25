@@ -47,7 +47,7 @@ class CameraLib(con: Context)  : AppCompatActivity(){
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (hasSdcard()){
             Log.d("hello","hash sdcard")
-            val simpleDateFormat = SimpleDateFormat("yyyy_MM_dd_mm_ss")
+            val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
             val fileName = simpleDateFormat.format(Date())
             val tempFile = File(Environment.getExternalStorageDirectory(), "$fileName.jpg")
             val currentAPIVersion =  Build.VERSION.SDK_INT
@@ -78,7 +78,7 @@ class CameraLib(con: Context)  : AppCompatActivity(){
 
     fun loadImage(){
         val intent = Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(intent, RESULT_LOAD_IMAGE)
+        activity?.startActivityForResult(intent, RESULT_LOAD_IMAGE)
     }
 
 }

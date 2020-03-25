@@ -8,13 +8,12 @@
     android:layout_height="match_parent"
     android:background="#edf9ee"
     >
-    <TextView
-        android:id="@+id/text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="Swipe to refresh me"
-        android:textSize="50sp"
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textColor="#000000"
         />
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
