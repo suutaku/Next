@@ -18,6 +18,7 @@ import com.baidu.mapapi.map.*
 import com.baidu.mapapi.model.LatLng
 import com.baidu.mapapi.search.core.SearchResult
 import com.baidu.mapapi.search.geocode.*
+import com.github.promeg.pinyinhelper.Pinyin
 
 
 class MapViewController : AppCompatActivity() {
@@ -64,21 +65,7 @@ class MapViewController : AppCompatActivity() {
             val listener: OnGetGeoCoderResultListener = object : OnGetGeoCoderResultListener {
                 // 反地理编码查询结果回调函数
                 override fun onGetReverseGeoCodeResult(result: ReverseGeoCodeResult) {
-                    if (result == null
-                        || result.error != SearchResult.ERRORNO.NO_ERROR
-                    ) { // 没有检测到结果
-//                        Toast.makeText(
-//                            this@MapViewController, "抱歉，未能找到结果",
-//                            Toast.LENGTH_LONG
-//                        ).show()
-                        showAlterDialog( "抱歉，未能找到结果", LatLng(.0,.0))
-                    }
-//                    Toast.makeText(
-//                        this@MapViewController,
-//                        "位置：" + result.address, Toast.LENGTH_LONG
-//                    )
-//                        .show()
-                    showAlterDialog( "位置：" + result.address,result.location)
+                    showAlterDialog( result)
                 }
 
                 // 地理编码查询结果回调函数
@@ -156,22 +143,34 @@ class MapViewController : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         mLocationClient.restart()
     }
-    fun showAlterDialog(message: String, latLng: LatLng){
+    fun showAlterDialog(result: ReverseGeoCodeResult){
         var dLog = AlertDialog.Builder(this)
         dLog.setTitle("确认信息")
-        dLog.setMessage(message)
-        dLog.setNegativeButton("取消",
-            DialogInterface.OnClickListener { _: DialogInterface, _: Int ->
-                return@OnClickListener })
+        if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR){
+            dLog.setMessage("未能获取地址信息")
+            dLog.setPositiveButton("确定",
+                DialogInterface.OnClickListener{ _: DialogInterface, _: Int ->
+                    startActivity(intent)
+                }
+            )
+        }else{
+            dLog.setMessage(result.address)
+            dLog.setNegativeButton("取消",
+                DialogInterface.OnClickListener { _: DialogInterface, _: Int ->
+                    return@OnClickListener })
 
-        dLog.setPositiveButton("确认",
-            DialogInterface.OnClickListener { _: DialogInterface, _: Int ->
-                val intent= Intent(this,CameraView::class.java)
-                intent.putExtra("LatFromMap",latLng.latitude)
-                intent.putExtra("LngFromMap",latLng.longitude)
-                intent.putExtra("AddressFromMap",message)
-                startActivity(intent)
-            })
+            dLog.setPositiveButton("确认",
+                DialogInterface.OnClickListener { _: DialogInterface, _: Int ->
+                    val intent= Intent(this,CameraView::class.java)
+                    intent.putExtra("LatFromMapSelect",result.location.latitude)
+                    intent.putExtra("LngFromMapSelect",result.location.longitude)
+                    intent.putExtra("AddressFromMapSelect",result.address)
+                    intent.putExtra("AddressFromMapProvinceSelect",Pinyin.toPinyin(result.addressDetail.province,"").toLowerCase())
+                    intent.putExtra("AddressFromMapCitySelect",Pinyin.toPinyin(result.addressDetail.city,"").toLowerCase())
+                    intent.putExtra("AddressFromMapAreaSelect",Pinyin.toPinyin(result.addressDetail.district,"").toLowerCase())
+                    startActivity(intent)
+                })
+        }
 
         dLog.show()
 

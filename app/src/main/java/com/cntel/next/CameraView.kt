@@ -73,8 +73,7 @@ class CameraView : AppCompatActivity(){
     var twoHyphens = "--";
     var boundary =  "*****";
     var imageBuffer :Bitmap ? = null
-    var locationBuffer = DoubleArray(2)
-    var userNameBuffer: String? = null
+    var feedbackBuffer: JSONObject? = null
     private var UIHandler :Handler? = null
     private var bundle :Bundle? = null
 
@@ -168,15 +167,24 @@ class CameraView : AppCompatActivity(){
         mapSelectorButton.setOnClickListener {
             val intent= Intent(this,MapViewController::class.java)
             startActivity(intent)
+
+
+            var resultDialog = AlertDialog.Builder(this)
+            resultDialog.setTitle("选择地址")
+            resultDialog.setView(R.layout.map_view)
+            resultDialog.setPositiveButton("确定", null)
+            resultDialog.setNegativeButton("取消",null)
+            var viewTmp = resultDialog.show()
+
         }
 
-        var regLat = intent.getDoubleExtra("LatFromMap",-1.0)
-        var regLng = intent.getDoubleExtra("LngFromMap",-1.0)
+        var regLat = intent.getDoubleExtra("LatFromMapSelect",-1.0)
+        var regLng = intent.getDoubleExtra("LngFromMapSelect",-1.0)
         if(regLat != -1.0 && regLng != -1.0){
             var lngEdit = findViewById<EditText>(R.id.lngEdit)
             var latEdit = findViewById<EditText>(R.id.latEdit)
             var adressD = findViewById<TextView>(R.id.adressDisplay)
-            var addressStr = intent.getStringExtra("AddressFromMap")
+            var addressStr = intent.getStringExtra("AddressFromMapSelect")
             latEdit.text = Editable.Factory.getInstance().newEditable(regLat.toString())
             lngEdit.text = Editable.Factory.getInstance().newEditable(regLng.toString())
             adressD.text = addressStr
@@ -225,8 +233,8 @@ class CameraView : AppCompatActivity(){
     private val myLocationListener = object : BDAbstractLocationListener() {
         override fun onReceiveLocation(p0: BDLocation?) {
             // text_map.setText("lat:$lat, long:$lng")
-            intent.putExtra("LatFromMap",p0!!.latitude)
-            intent.putExtra("LngFromMap",p0!!.longitude)
+            intent.putExtra("LatFromMapSelf",p0!!.latitude)
+            intent.putExtra("LngFromMapSelf",p0!!.longitude)
             var geoCoder = GeoCoder.newInstance()
             var op = ReverseGeoCodeOption()
             op.location(LatLng(p0!!.latitude,p0!!.longitude))
@@ -237,12 +245,12 @@ class CameraView : AppCompatActivity(){
 
                     }
 
-                    intent.putExtra("AddressFromMap",result.address)
-                    intent.putExtra("AddressFromMapProvince",Pinyin.toPinyin(result.addressDetail.province,"").toLowerCase())
-                    intent.putExtra("AddressFromMapCity",Pinyin.toPinyin(result.addressDetail.city,"").toLowerCase())
-                    intent.putExtra("AddressFromMapArea",Pinyin.toPinyin(result.addressDetail.district,"").toLowerCase())
-                    intent.putExtra("AddressFromMapStreet",Pinyin.toPinyin(result.addressDetail.street,"").toLowerCase())
-                    intent.putExtra("AddressFromMapNumber",Pinyin.toPinyin(result.addressDetail.streetNumber,"").toLowerCase())
+                    intent.putExtra("AddressFromMapSelf",result.address)
+                    intent.putExtra("AddressFromMapProvinceSelf",Pinyin.toPinyin(result.addressDetail.province,"").toLowerCase())
+                    intent.putExtra("AddressFromMapCitySelf",Pinyin.toPinyin(result.addressDetail.city,"").toLowerCase())
+                    intent.putExtra("AddressFromMapAreaSelf",Pinyin.toPinyin(result.addressDetail.district,"").toLowerCase())
+                    intent.putExtra("AddressFromMapStreetSelf",Pinyin.toPinyin(result.addressDetail.street,"").toLowerCase())
+                    intent.putExtra("AddressFromMapNumberSelf",Pinyin.toPinyin(result.addressDetail.streetNumber,"").toLowerCase())
 
                 }
 
@@ -267,8 +275,8 @@ class CameraView : AppCompatActivity(){
         var confirmPermission = act.findViewById<TextView>(R.id.confirmPermission)
 
         confirmUserName?.text =  intent.getStringExtra("UserName")
-        confirmAddress?.text =  intent.getStringExtra("AddressFromMap")
-        confirmLatlng?.text =  intent.getDoubleExtra("LatFromMap",-1.0).toString() +" "+ intent.getDoubleExtra("LngFromMap",-1.0)
+        confirmAddress?.text =  intent.getStringExtra("AddressFromMapSelf")
+        confirmLatlng?.text =  intent.getDoubleExtra("LatFromMapSelf",-1.0).toString() +" "+ intent.getDoubleExtra("LngFromMapSelf",-1.0)
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         val current = simpleDateFormat.format(Date())
         confirmDate?.text = current.toString()
@@ -282,7 +290,7 @@ class CameraView : AppCompatActivity(){
         sumitButton?.setOnClickListener {
             Log.d(TAG,"sumitButton clicked")
             if(confirmAddress?.text == "") {
-                confirmAddress.text = intent.getStringExtra("AddressFromMap")
+                confirmAddress.text = intent.getStringExtra("AddressFromMapSelf")
                 Toast.makeText(
                     this@CameraView, "正在获取地址信息",
                     Toast.LENGTH_LONG
@@ -292,7 +300,7 @@ class CameraView : AppCompatActivity(){
             }
 
             if(confirmLatlng?.text == "") {
-                confirmLatlng.text =  intent.getDoubleExtra("LatFromMap",-1.0).toString() +" "+ intent.getDoubleExtra("LngFromMap",-1.0)
+                confirmLatlng.text =  intent.getDoubleExtra("LatFromMapSelf",-1.0).toString() +" "+ intent.getDoubleExtra("LngFromMapSelf",-1.0)
                 Toast.makeText(
                     this@CameraView, "正在获取定位信息",
                     Toast.LENGTH_LONG
@@ -303,6 +311,7 @@ class CameraView : AppCompatActivity(){
 
             var dLog = AlertDialog.Builder(this)
             dLog.setTitle("确认信息")
+            dLog.setCancelable(false)
             dLog.setMessage("数据准备中。。。")
             var dIn = dLog.show()
 
@@ -328,7 +337,7 @@ class CameraView : AppCompatActivity(){
                         dIn = dLog.show()
                     } else if (msg.what == MESSAGE_PROGRESS_END) {
                         dIn.dismiss()
-                        dLog.setMessage("上传完成！")
+                        dLog.setMessage("上传完成！\nHash: "+feedbackBuffer?.getJSONObject("result")?.getString("hash")+"\nHeight: "+feedbackBuffer?.getJSONObject("result")?.getString("height"))
                         dLog.setPositiveButton("确定",
                             DialogInterface.OnClickListener { dialog: DialogInterface, _: Int ->
                                 dialog.dismiss()
@@ -361,7 +370,6 @@ class CameraView : AppCompatActivity(){
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         Log.d(TAG,"onActivityResult called")
         super.onActivityResult(requestCode, resultCode, data)
-            var viewTmp: AlertDialog? = null
         when(requestCode ){
             CameraView.RESULT_LOAD_IMAGE ->{
                 if(data == null){
@@ -429,13 +437,25 @@ class CameraView : AppCompatActivity(){
         var fileHash = doUpload(byteArrayOutputStream.toByteArray())
 
         var resized = Bitmap.createScaledBitmap(imageBuffer, imageBuffer!!.width/8, imageBuffer!!.height/8, true)
-        resized?.compress(Bitmap.CompressFormat.JPEG,100,byteArrayOutputStream)
-        var previewHash = doUpload(byteArrayOutputStream.toByteArray())
+        if(resized.width < resized.height){
+            var matrix = Matrix();
+            matrix.postRotate(90F);
+            resized = Bitmap.createBitmap(resized, 0, 0, resized.width, resized.height, matrix, true);
+        }
+        var byteArrayOutputStream2 =  ByteArrayOutputStream()
+        resized?.compress(Bitmap.CompressFormat.JPEG,90,byteArrayOutputStream2)
+        var previewHash = doUpload(byteArrayOutputStream2.toByteArray())
+        byteArrayOutputStream.flush()
+        byteArrayOutputStream2.flush()
+        imageBuffer?.recycle()
+        imageBuffer = null
+        resized?.recycle()
+        System.gc();
         var msg3 = Message()
         msg3.what = MESSAGE_BLOCK_SUBMIT
         UIHandler?.sendMessage(msg3)
         //submit block
-        submitTransaction(fileHash,previewHash)
+        feedbackBuffer = submitTransaction(fileHash,previewHash)
         var msg4 = Message()
         msg4.what = MESSAGE_PROGRESS_END
         UIHandler?.sendMessage(msg4)
@@ -523,13 +543,13 @@ class CameraView : AppCompatActivity(){
         postObj.put("FilePreviewHash",previewHash)
         postObj.put("Type","Transaction")
         var tmpLI = JSONObject()
-        tmpLI.put("Latitude",intent.getDoubleExtra("LatFromMap",-1.0))
-        tmpLI.put("Longitude",intent.getDoubleExtra("LngFromMap",-1.0))
-        tmpLI.put("Province",intent.getStringExtra("AddressFromMapProvince"))
-        tmpLI.put("City",intent.getStringExtra("AddressFromMapCity"))
-        tmpLI.put("Area",intent.getStringExtra("AddressFromMapArea"))
-        tmpLI.put("Street",intent.getStringExtra("AddressFromMapStreet"))
-        tmpLI.put("Number",intent.getStringExtra("AddressFromMapNumber"))
+        tmpLI.put("Latitude",intent.getDoubleExtra("LatFromMapSelf",-1.0))
+        tmpLI.put("Longitude",intent.getDoubleExtra("LngFromMapSelf",-1.0))
+        tmpLI.put("Province",intent.getStringExtra("AddressFromMapProvinceSelf"))
+        tmpLI.put("City",intent.getStringExtra("AddressFromMapCitySelf"))
+        tmpLI.put("Area",intent.getStringExtra("AddressFromMapAreaSelf"))
+        tmpLI.put("Street",intent.getStringExtra("AddressFromMapStreetSelf"))
+        tmpLI.put("Number",intent.getStringExtra("AddressFromMapNumberSelf"))
         postObj.put("Location",tmpLI)
         postObj.put("User",intent.getStringExtra("UserName"))
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -565,6 +585,12 @@ class CameraView : AppCompatActivity(){
             return jObj
         }
         return null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        imageBuffer?.recycle()
+        imageBuffer = null
     }
 }
 

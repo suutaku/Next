@@ -1,5 +1,5 @@
 <resources>
-    <string name="test_chain_server">http://192.168.0.180:26657</string>
+    <string name="test_chain_server">http://192.168.0.104:26657</string>
     <string name="chain_server">http://demo.cotnetwork.xyz:26657</string>
     <string name="cluster_server">http://demo.cotnetwork.xyz:30000</string>
     <string name="storage_node">http://demo.cotnetwork.xyz:30001</string>

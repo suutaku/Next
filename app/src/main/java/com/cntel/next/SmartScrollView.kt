@@ -116,15 +116,19 @@ class SmartScrollView: AppCompatActivity(){
 
             var resultDialog = AlertDialog.Builder(this)
             resultDialog.setTitle("详细信息")
+            resultDialog.setCancelable(false)
             resultDialog.setView(R.layout.result_detail)
-            resultDialog.setPositiveButton("确定", null)
-            var viewTmp = resultDialog.show()
-
+            resultDialog.setPositiveButton("确定",
+                DialogInterface.OnClickListener { dialog: DialogInterface, _: Int ->
+                    dialog.dismiss()
+                    return@OnClickListener
+                })
             var value = dataArray?.get(index)?.getString("Value")
 
             var Obj = JSONObject(value)
             // fill infomations
 //            var viewTmp = resultDialog as AlertDialog
+            var viewTmp = resultDialog.show()
             var preview =  viewTmp.findViewById<ImageView>(R.id.preveiw)
             var url = URL(fileServer+"/api/v0/cat?arg="+Obj.getString("FilePreviewHash"))
             var image = BitmapFactory.decodeStream(url.openConnection().getInputStream());

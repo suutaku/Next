@@ -2,6 +2,7 @@ package com.cntel.next
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.View
 import android.widget.*
@@ -25,6 +26,7 @@ class SpinnerManager(context: Context) : AppCompatActivity() {
     private var spinnerMonthEnd: Spinner? = null // = findViewById(R.id.spinner_month_end)
     private var spinnerDayStart: Spinner? = null // = findViewById(R.id.spinner_day_start)
     private var spinnerDayEnd: Spinner? = null // = findViewById(R.id.spinner_day_end)
+    private var editLat: EditText? = null
     private var mFilterValue = JSONObject()
 // Create an ArrayAdapter using the string array and a default spinner layout
     private val TAG = "SpinnerController"
@@ -46,11 +48,18 @@ class SpinnerManager(context: Context) : AppCompatActivity() {
 
     fun getFilterValue() :JSONObject{
         mFilterValue.put("MainValue",mainTextValue!!.text.toString())
+        if(editLat?.text.toString() != ""){
+            val intent= act.intent
+            mFilterValue.put("Province",intent.getStringExtra("AddressFromMapProvinceSelect"))
+            mFilterValue.put("City",intent.getStringExtra("AddressFromMapCitySelect"))
+            mFilterValue.put("Area",intent.getStringExtra("AddressFromMapAreaSelect"))
+        }
         return mFilterValue
     }
 
     fun init(){
         // search
+        editLat = act.findViewById<EditText>(R.id.latEdit)
         mainTextValue = act.findViewById<EditText>(R.id.mainValue)
         spinner = makeSpinner(R.id.planets_spinner,R.layout.spinner_item,R.array.planets_array)
         spinner!!.onItemSelectedListener = object :AdapterView.OnItemSelectedListener {
