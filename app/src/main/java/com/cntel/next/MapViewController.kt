@@ -8,6 +8,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -24,6 +25,7 @@ import com.github.promeg.pinyinhelper.Pinyin
 
 
 class MapViewController(baseCon: Context,context: AlertDialog) : AppCompatActivity() {
+    private val TAG = "MapViewController"
     private lateinit var mLocationClient: LocationClient
     lateinit var baiduMap: BaiduMap
     private var mapView: MapView? = null
@@ -34,7 +36,6 @@ class MapViewController(baseCon: Context,context: AlertDialog) : AppCompatActivi
         cancelButton?.setOnClickListener {
             mContext.dismiss()
         }
-
         mapView = mContext.findViewById<MapView>(R.id.bMapView2)
         //定位初始化
         mLocationClient = LocationClient(mBaseContext.applicationContext)
@@ -65,8 +66,7 @@ class MapViewController(baseCon: Context,context: AlertDialog) : AppCompatActivi
 
                 // 地理编码查询结果回调函数
                 override fun onGetGeoCodeResult(result: GeoCodeResult) {
-                    if (result == null
-                        || result.error != SearchResult.ERRORNO.NO_ERROR
+                    if (result.error != SearchResult.ERRORNO.NO_ERROR
                     ) { // 没有检测到结果
                     }
                 }
@@ -77,14 +77,6 @@ class MapViewController(baseCon: Context,context: AlertDialog) : AppCompatActivi
 
         }
 
-
-//        text_map.onClick {
-//            mLocationClient.requestLocation()//重新请求定位
-//        }
-
-        if (Build.VERSION.SDK_INT >= 23) {
-            checkPermission()
-        }
     }
 
 
@@ -125,37 +117,23 @@ class MapViewController(baseCon: Context,context: AlertDialog) : AppCompatActivi
         super.onDestroy()
     }
 
-    private fun checkPermission() {
-        val mPermissionList = arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.READ_PHONE_STATE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE)
-        ActivityCompat.requestPermissions(mBaseContext as Activity, mPermissionList, 123)
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        mLocationClient.restart()
-    }
     fun showAlterDialog(result: ReverseGeoCodeResult){
-        var dLog = AlertDialog.Builder(mBaseContext)
-        dLog.setTitle("确认信息")
+        var dLog = mBaseContext?.let { AlertDialog.Builder(it) }
+        dLog?.setTitle("确认信息")
         if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR){
-            dLog.setMessage("未能获取地址信息")
-            dLog.setPositiveButton("确定",
+            dLog?.setMessage("未能获取地址信息")
+            dLog?.setPositiveButton("确定",
                 DialogInterface.OnClickListener{ _: DialogInterface, _: Int ->
 
                 }
             )
         }else{
-            dLog.setMessage(result.address)
-            dLog.setNegativeButton("取消",
+            dLog?.setMessage(result.address)
+            dLog?.setNegativeButton("取消",
                 DialogInterface.OnClickListener { _: DialogInterface, _: Int ->
                     return@OnClickListener })
 
-            dLog.setPositiveButton("确认",
+            dLog?.setPositiveButton("确认",
                 DialogInterface.OnClickListener { _: DialogInterface, _: Int ->
                     var act = mBaseContext as Activity
                     val intent= act.intent
@@ -169,7 +147,7 @@ class MapViewController(baseCon: Context,context: AlertDialog) : AppCompatActivi
                 })
         }
 
-        dLog.show()
+        dLog?.show()
 
 
     }

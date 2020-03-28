@@ -60,25 +60,25 @@ class CameraLib(con: Context)  : AppCompatActivity(){
                 val contentValues = ContentValues(1)
                 contentValues.put(MediaStore.Images.Media.DATA, tempFile.absolutePath)
                 //检查是否有存储权限，以免崩溃
-                if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) } != PackageManager.PERMISSION_GRANTED) {
+                if (context.let { ContextCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) } != PackageManager.PERMISSION_GRANTED) {
                     //申请WRITE_EXTERNAL_STORAGE权限
                     ActivityCompat.requestPermissions(context as Activity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),0)
                     Toast.makeText(this, "请开启存储权限", Toast.LENGTH_SHORT).show()
                     return
                 }
-                imageUri =  context!!.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+                imageUri =  context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
             }
         }else{
             Log.d("hello","not have sdcard")
         }
         // 开启一个带有返回值的Activity，请求码为PHOTO_REQUEST_CAREMA
-        activity?.startActivityForResult(intent, RESULT_TAKE_PHOTO)
+        activity.startActivityForResult(intent, RESULT_TAKE_PHOTO)
     }
 
     fun loadImage(){
         val intent = Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        activity?.startActivityForResult(intent, RESULT_LOAD_IMAGE)
+        activity.startActivityForResult(intent, RESULT_LOAD_IMAGE)
     }
 
 }

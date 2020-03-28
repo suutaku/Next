@@ -22,7 +22,6 @@
         android:layout_width="150dp"
         android:layout_height="25dp"
         android:gravity="left"
-        android:text="2020-03-20"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.141"
         app:layout_constraintStart_toEndOf="@+id/textView9"
@@ -74,15 +73,12 @@
 
     <TextView
         android:id="@+id/confirmAddress"
-        android:layout_width="200dp"
+        android:layout_width="238dp"
         android:layout_height="25dp"
-        android:layout_marginStart="17dp"
-        android:layout_marginEnd="32dp"
         android:gravity="left"
-        android:text="2020-03-20"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/textView9"
+        app:layout_constraintHorizontal_bias="0.514"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/confirmLatlng" />
 
     <TextView
@@ -115,5 +111,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/divider_horizontal_dark" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="73dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="88dp"
+        android:gravity="center"
+        android:text="类型"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/confirmAddress" />
+
+    <Spinner
+        android:id="@+id/confirmSpinner"
+        android:layout_width="150dp"
+        android:layout_height="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.15"
+        app:layout_constraintStart_toEndOf="@+id/textView"
+        app:layout_constraintTop_toTopOf="@+id/textView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

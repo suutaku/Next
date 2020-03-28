@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" android:layout_height="match_parent" android:layout_width="match_parent">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <item
+        android:id="@+id/upload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/upload"
+        android:title="@string/menu_upload" />
+
+    <item
+        android:id="@+id/search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/search2"
+        android:title="@string/menu_search" />
+
     <item
         android:id="@+id/user_information"
-        android:title="用户信息"
-        android:icon="@drawable/user"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/user"
+        android:title="@string/menu_user_information" />
+
     <item
         android:id="@+id/logout"
-        android:title="退出登录"
-        android:icon="@drawable/exit"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/exit"
+        android:title="@string/menu_quit" />
 </menu>

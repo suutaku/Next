@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/myLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFCFC"
+    android:orientation="vertical"
+    tools:context=".SearchView">
+
+
+    <TextView
+        android:id="@+id/channel"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:gravity="left|center_vertical"
+        android:text="数据渠道"
+        android:textColor="#373737"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.045"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/spinner_channel" />
+
+    <TextView
+        android:id="@+id/activeType"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:gravity="left|center_vertical"
+        android:text="数据类型"
+        android:textColor="#373737"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.045"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/spinner_active_type" />
+
+    <TextView
+        android:id="@+id/channel5"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="4dp"
+        android:gravity="left|center_vertical"
+        android:text="区/县"
+        android:textColor="#373737"
+        app:layout_constraintStart_toEndOf="@+id/spinner_area"
+        app:layout_constraintTop_toTopOf="@+id/spinner_city" />
+
+    <TextView
+        android:id="@+id/channel8"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="20dp"
+        android:gravity="left|center_vertical"
+        android:text="北纬"
+        android:textColor="#373737"
+        app:layout_constraintStart_toEndOf="@+id/latEdit"
+        app:layout_constraintTop_toBottomOf="@+id/spinner_city" />
+
+    <TextView
+        android:id="@+id/channel7"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
+        android:gravity="left|center_vertical"
+        android:text="东经"
+        android:textColor="#373737"
+        app:layout_constraintStart_toEndOf="@+id/channel6"
+        app:layout_constraintTop_toTopOf="@+id/channel8" />
+
+    <EditText
+        android:id="@+id/latEdit"
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/edit_background"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:textColor="#333333"
+        app:layout_constraintStart_toEndOf="@+id/channel7"
+        app:layout_constraintTop_toTopOf="@+id/channel8" />
+
+    <EditText
+        android:id="@+id/lngEdit"
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/edit_background"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:textColor="#333333"
+        app:layout_constraintStart_toEndOf="@+id/channel8"
+        app:layout_constraintTop_toTopOf="@+id/channel8" />
+
+    <Button
+        android:id="@+id/mapSelectorButton"
+        android:layout_width="68dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="12dp"
+        android:text="选择"
+        android:textSize="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/lngEdit"
+        app:layout_constraintTop_toTopOf="@+id/channel8" />
+
+    <TextView
+        android:id="@+id/channel6"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
+        android:gravity="left|center_vertical"
+        android:text="坐标"
+        android:textColor="#373737"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/channel8" />
+
+    <Spinner
+        android:id="@+id/spinner_area"
+        android:layout_width="42dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/spinner_background_2"
+        android:textColor="#1B1A1A"
+        android:textSize="8sp"
+        android:visibility="visible"
+        app:layout_constraintStart_toEndOf="@+id/channel4"
+        app:layout_constraintTop_toTopOf="@+id/spinner_city"
+        tools:ignore="MissingConstraints"
+        tools:visibility="visible" />
+
+    <Spinner
+        android:id="@+id/spinner_channel"
+        android:layout_width="250dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/spinner_background_2"
+        android:textColor="#1B1A1A"
+        android:textSize="8sp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.089"
+        app:layout_constraintStart_toEndOf="@+id/channel"
+        app:layout_constraintTop_toBottomOf="@+id/spinner_active_type"
+        tools:ignore="MissingConstraints"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/channel3"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="4dp"
+        android:gravity="left|center_vertical"
+        android:text="省"
+        android:textColor="#373737"
+        app:layout_constraintStart_toEndOf="@+id/spinner_province"
+        app:layout_constraintTop_toTopOf="@+id/spinner_city" />
+
+    <Spinner
+        android:id="@+id/spinner_city"
+        android:layout_width="42dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/spinner_background_2"
+        android:textColor="#1B1A1A"
+        android:textSize="8sp"
+        android:visibility="visible"
+        app:layout_constraintStart_toEndOf="@+id/channel3"
+        app:layout_constraintTop_toBottomOf="@+id/spinner_channel"
+        tools:ignore="MissingConstraints"
+        tools:visibility="visible" />
+
+    <Spinner
+        android:id="@+id/spinner_province"
+        android:layout_width="42dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="36dp"
+        android:background="@drawable/spinner_background_2"
+        android:textColor="#1B1A1A"
+        android:textSize="8sp"
+        android:visibility="visible"
+        app:layout_constraintStart_toEndOf="@+id/channel2"
+        app:layout_constraintTop_toTopOf="@+id/spinner_city"
+        tools:ignore="MissingConstraints"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/channel2"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
+        android:gravity="left|center_vertical"
+        android:text="地址"
+        android:textColor="#373737"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/spinner_city" />
+
+    <Spinner
+        android:id="@+id/spinner_month_start"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="52dp"
+        android:background="@drawable/spinner_background_2"
+        android:textColor="#1B1A1A"
+        android:textSize="8sp"
+        android:visibility="visible"
+        app:layout_constraintStart_toEndOf="@+id/channel12"
+        app:layout_constraintTop_toBottomOf="@+id/channel8"
+        tools:ignore="MissingConstraints"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/channel15"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="12dp"
+        android:gravity="left|center_vertical"
+        android:text="月"
+        android:textColor="#373737"
+        app:layout_constraintStart_toEndOf="@+id/spinner_month_end"
+        app:layout_constraintTop_toTopOf="@+id/spinner_month_end" />
+
+    <Spinner
+        android:id="@+id/spinner_day_end"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/spinner_background_2"
+        android:textColor="#1B1A1A"
+        android:textSize="8sp"
+        android:visibility="visible"
+        app:layout_constraintStart_toEndOf="@+id/channel15"
+        app:layout_constraintTop_toTopOf="@+id/spinner_month_end"
+        tools:ignore="MissingConstraints"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/channel12"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="12dp"
+        android:gravity="left|center_vertical"
+        android:text="年"
+        android:textColor="#373737"
+        app:layout_constraintStart_toEndOf="@+id/spinner_year_start"
+        app:layout_constraintTop_toTopOf="@+id/spinner_month_start" />
+
+    <Spinner
+        android:id="@+id/spinner_day_start"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/spinner_background_2"
+        android:textColor="#1B1A1A"
+        android:textSize="8sp"
+        android:visibility="visible"
+        app:layout_constraintStart_toEndOf="@+id/channel13"
+        app:layout_constraintTop_toTopOf="@+id/spinner_month_start"
+        tools:ignore="MissingConstraints"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/channel13"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="12dp"
+        android:gravity="left|center_vertical"
+        android:text="月"
+        android:textColor="#373737"
+        app:layout_constraintStart_toEndOf="@+id/spinner_month_start"
+        app:layout_constraintTop_toTopOf="@+id/spinner_month_start" />
+
+    <TextView
+        android:id="@+id/channel16"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="12dp"
+        android:gravity="left|center_vertical"
+        android:text="日"
+        android:textColor="#373737"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/spinner_day_end"
+        app:layout_constraintTop_toTopOf="@+id/spinner_month_end" />
+
+    <TextView
+        android:id="@+id/channel14"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="12dp"
+        android:gravity="left|center_vertical"
+        android:text="年"
+        android:textColor="#373737"
+        app:layout_constraintStart_toEndOf="@+id/spinner_year_end"
+        app:layout_constraintTop_toTopOf="@+id/spinner_month_end" />
+
+    <TextView
+        android:id="@+id/channel11"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="12dp"
+        android:gravity="center_vertical|fill_vertical"
+        android:text="日"
+        android:textColor="#373737"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/spinner_day_start"
+        app:layout_constraintTop_toTopOf="@+id/spinner_month_start" />
+
+    <Spinner
+        android:id="@+id/spinner_month_end"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/spinner_background_2"
+        android:textColor="#1B1A1A"
+        android:textSize="8sp"
+        android:visibility="visible"
+        app:layout_constraintStart_toEndOf="@+id/channel14"
+        app:layout_constraintTop_toBottomOf="@+id/spinner_month_start"
+        tools:ignore="MissingConstraints"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/channel9"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="8dp"
+        android:gravity="left|center_vertical"
+        android:text="开始日期"
+        android:textColor="#373737"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/spinner_month_start" />
+
+    <Spinner
+        android:id="@+id/spinner_year_start"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/spinner_background_2"
+        android:textColor="#1B1A1A"
+        android:textSize="8sp"
+        android:visibility="visible"
+        app:layout_constraintStart_toEndOf="@+id/channel9"
+        app:layout_constraintTop_toTopOf="@+id/spinner_month_start"
+        tools:ignore="MissingConstraints"
+        tools:visibility="visible" />
+
+    <Spinner
+        android:id="@+id/spinner_year_end"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/spinner_background_2"
+        android:textColor="#1B1A1A"
+        android:textSize="8sp"
+        android:visibility="visible"
+        app:layout_constraintStart_toEndOf="@+id/channel17"
+        app:layout_constraintTop_toTopOf="@+id/spinner_month_end"
+        tools:ignore="MissingConstraints"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/channel17"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="8dp"
+        android:gravity="left|center_vertical"
+        android:text="结束日期"
+        android:textColor="#373737"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/spinner_month_end" />
+
+    <TextView
+        android:id="@+id/channel4"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="4dp"
+        android:gravity="left|center_vertical"
+        android:text="市"
+        android:textColor="#373737"
+        app:layout_constraintStart_toEndOf="@+id/spinner_city"
+        app:layout_constraintTop_toTopOf="@+id/spinner_city" />
+
+    <Spinner
+        android:id="@+id/spinner_active_type"
+        android:layout_width="250dp"
+        android:layout_height="30dp"
+        android:background="@drawable/spinner_background_2"
+        android:textColor="#1B1A1A"
+        android:textSize="8sp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.089"
+        app:layout_constraintStart_toEndOf="@+id/activeType"
+        app:layout_constraintTop_toBottomOf="@+id/searchHint"
+        tools:ignore="MissingConstraints"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/menuButton"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/caidan"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.026"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/mainValue"
+        android:layout_width="345dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="104dp"
+        android:background="@drawable/edit_background"
+        android:gravity="center"
+        android:hint="请输入关键字"
+        android:radius="20dp"
+        android:shadowColor="#555555"
+        android:textColor="#0E0E0E"
+        android:textColorHint="#979696"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/searchHint"
+        android:layout_width="221dp"
+        android:layout_height="40dp"
+        android:cursorVisible="true"
+        android:gravity="center"
+        android:hint="@string/search_hint"
+        android:radius="10dp"
+        android:text="请选择搜索条件进行搜索"
+        android:textColor="#333333"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mainValue"
+        app:layout_constraintVertical_bias="0.034" />
+
+    <ImageView
+        android:id="@+id/searchButton"
+        android:layout_width="52dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/search_button_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/mainValue"
+        app:srcCompat="@drawable/search" />
+
+    <Spinner
+        android:id="@+id/planets_spinner"
+        android:layout_width="52dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/spinner_background"
+        android:textColor="#1B1A1A"
+        android:textSize="8sp"
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/mainValue"
+        tools:ignore="MissingConstraints"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/adressDisplay"
+        android:layout_width="270dp"
+        android:layout_height="31dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:textColor="#333333"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.425"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/channel8" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

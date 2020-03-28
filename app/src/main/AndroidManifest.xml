@@ -8,7 +8,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.NoActionBar">
+        android:theme="@style/Theme.AppCompat.NoActionBar"
+        android:usesCleartextTraffic="true">
         <activity android:name=".MainActivity"
                  android:screenOrientation="fullSensor">
 
@@ -18,9 +19,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CameraView" android:screenOrientation="fullSensor"></activity>
+        <activity android:name=".SearchView" android:screenOrientation="fullSensor"></activity>
         <activity android:name=".MapViewController" android:screenOrientation="fullSensor"></activity>
         <activity android:name=".SmartScrollView" android:screenOrientation="fullSensor"></activity>
+        <activity android:name=".UploadView" android:screenOrientation="fullSensor"></activity>
         <uses-library android:name="org.apache.http.legacy" android:required="false" />
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
@@ -38,16 +40,11 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET" />
-   <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-
-    <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
-    <!-- 获取运营商信息，用于支持提供运营商信息相关的接口-->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
-    <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
 
 
 </manifest>

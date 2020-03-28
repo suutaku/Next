@@ -2,20 +2,22 @@ package com.cntel.next
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.PendingIntent.getActivity
+
 import android.content.DialogInterface
-import android.content.Intent
+
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
+
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.Message
 import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import kotlinx.android.synthetic.main.search_result.*
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -23,15 +25,15 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
 import android.util.Base64
-import android.webkit.WebView
+
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import com.baidu.mapapi.map.*
 import com.baidu.mapapi.model.LatLng
 import com.baidu.mapapi.search.core.SearchResult
 import com.baidu.mapapi.search.geocode.*
-import com.github.promeg.pinyinhelper.Pinyin
-import org.json.JSONArray
+import com.bumptech.glide.Glide
+import java.lang.ref.WeakReference
 import java.text.SimpleDateFormat
 
 
@@ -43,12 +45,16 @@ class SmartScrollView: AppCompatActivity(){
     private lateinit var mHandler: Handler
     private lateinit var mRunnable:Runnable
     private var  mFilterValue: JSONObject? = null
+    private val MESSAGE_DOWNLOAD_FINISH = 0
+    private val mActivity = this
+    private var UIHandler: Handler? = null
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.search_result)
-        host = getString(R.string.test_chain_server)
+
+        host = getString(R.string.chain_server)
         fileServer = getString(R.string.storage_node)
         var swip = findViewById<SwipeRefreshLayout>(R.id.swipe_refresh_layout)
         // Initialize a new Random instance
@@ -61,6 +67,47 @@ class SmartScrollView: AppCompatActivity(){
         var names = ArrayList<String>()
         var dataArray: ArrayList<JSONObject>? = null
         var indexArray: ArrayList<JSONObject>? = null
+        var image: Bitmap? = null
+
+        // common dialog for detail information
+        var viewTmp: AlertDialog? = null
+        var resultDialog = AlertDialog.Builder(this)
+        resultDialog.setTitle("详细信息")
+        resultDialog.setCancelable(false)
+        resultDialog.setView(R.layout.result_detail)
+        resultDialog.setPositiveButton("确定",
+            DialogInterface.OnClickListener { dialog: DialogInterface, _: Int ->
+                dialog.dismiss()
+            })
+        resultDialog.setOnDismissListener {
+            Log.d(TAG,"Dialog dismissed")
+            var preview =  viewTmp?.findViewById<ImageView>(R.id.preveiw)
+            Glide.with(mActivity).clear(preview!!)
+            var mapView = viewTmp?.findViewById<MapView>(R.id.bMapView2)
+            mapView?.onDestroy()//关闭地图
+            image?.recycle()
+            System.gc()
+        }
+
+        UIHandler = @SuppressLint("HandlerLeak")
+        object : Handler() {
+            override fun handleMessage(msg: Message?) {
+                if (msg == null) {
+                    return
+                }
+                Log.d(TAG,"message come !!!!!")
+                if (msg.what == MESSAGE_DOWNLOAD_FINISH) {
+                    var preview =  viewTmp?.findViewById<ImageView>(R.id.preveiw)
+//                    preview?.setImageBitmap(image)
+                        Glide.with(mActivity).clear(preview!!)
+                        Glide.with(mActivity).load(image).override(400,300).fitCenter().into(preview!!)
+                }  else {
+
+                }
+            }
+        }
+
+
         fun updateIndex(): ArrayList<JSONObject>?{
 
             var searchKey: String? = null
@@ -93,8 +140,9 @@ class SmartScrollView: AppCompatActivity(){
         indexArray = updateIndex()
 
         var  arrayAdapter = ArrayAdapter<String>(this,R.layout.list_view_layout,names)
+        var listView = findViewById<ListView>(R.id.listView)
         listView.adapter = arrayAdapter
-        listView.setOnItemClickListener{ adapterView: AdapterView<*>, view1: View, i: Int, l: Long ->
+        listView.setOnItemClickListener{ adapterView: AdapterView<*>, _: View, i: Int, _: Long ->
             var index = i
             if ( indexArray?.get(i)?.getString("Type") == "INDEX"){
                 var opts = mFilterValue
@@ -113,35 +161,36 @@ class SmartScrollView: AppCompatActivity(){
             if(!dataArray?.get(index)?.has("Value")!!){
                 return@setOnItemClickListener
             }
+            //return@setOnItemClickListener
+            viewTmp = resultDialog.show()
 
-            var resultDialog = AlertDialog.Builder(this)
-            resultDialog.setTitle("详细信息")
-            resultDialog.setCancelable(false)
-            resultDialog.setView(R.layout.result_detail)
-            resultDialog.setPositiveButton("确定",
-                DialogInterface.OnClickListener { dialog: DialogInterface, _: Int ->
-                    dialog.dismiss()
-                    return@OnClickListener
-                })
+
             var value = dataArray?.get(index)?.getString("Value")
-
             var Obj = JSONObject(value)
-            // fill infomations
-//            var viewTmp = resultDialog as AlertDialog
-            var viewTmp = resultDialog.show()
-            var preview =  viewTmp.findViewById<ImageView>(R.id.preveiw)
-            var url = URL(fileServer+"/api/v0/cat?arg="+Obj.getString("FilePreviewHash"))
-            var image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-            preview?.setImageBitmap(image)
-            var userName = viewTmp.findViewById<TextView>(R.id.user_detai2)
+
+            Thread{
+                var url = URL(fileServer+"/api/v0/cat?arg="+Obj.getString("FilePreviewHash"))
+                image?.recycle()
+                var strem = url.openConnection().getInputStream()
+                image = BitmapFactory.decodeStream(strem);
+                strem.close()
+                var msg = Message()
+                msg.what = MESSAGE_DOWNLOAD_FINISH
+                UIHandler?.sendMessage(msg)
+            }.start()
+            var preview =  viewTmp?.findViewById<ImageView>(R.id.preveiw)
+            Glide.with(this).clear(preview!!)
+            Glide.with(this).load(R.drawable.loading).into(preview!!);
+//            preview?.setImageResource(R.drawable.loading)
+            var userName = viewTmp?.findViewById<TextView>(R.id.user_detai2)
             userName?.text = Obj.getString("User")
-            var channel = viewTmp.findViewById<TextView>(R.id.data_channel_detai2)
+            var channel = viewTmp?.findViewById<TextView>(R.id.data_channel_detai2)
             channel?.text = Obj.getString("Channel")
-            var location = viewTmp.findViewById<TextView>(R.id.location_detail2)
+            var location = viewTmp?.findViewById<TextView>(R.id.location_detail2)
             var lat = Obj.getJSONObject("Location").getDouble("Latitude")
             var lng = Obj.getJSONObject("Location").getDouble("Longitude")
             location?.text = lng.toString()+","+lat
-            var address = viewTmp.findViewById<TextView>(R.id.adress2)
+            var address = viewTmp?.findViewById<TextView>(R.id.adress2)
             var geoCoder = GeoCoder.newInstance()
             var op = ReverseGeoCodeOption()
             op.location(LatLng(lat,lng))
@@ -153,7 +202,6 @@ class SmartScrollView: AppCompatActivity(){
                     }else{
                         address?.text = result.address
                     }
-
                 }
 
                 // 地理编码查询结果回调函数
@@ -164,7 +212,7 @@ class SmartScrollView: AppCompatActivity(){
             }
             geoCoder.setOnGetGeoCodeResultListener(listener)
             geoCoder.reverseGeoCode(op)
-            var baiduMap = viewTmp.findViewById<MapView>(R.id.bMapView2)?.map
+            var baiduMap = viewTmp?.findViewById<MapView>(R.id.bMapView2)?.map
             var mMapStatus = MapStatus.Builder()
                 .target(LatLng(lat,lng))
                 .zoom(18.0f)
@@ -179,11 +227,6 @@ class SmartScrollView: AppCompatActivity(){
         swip.setOnRefreshListener {
             // Initialize a new Runnable
             mRunnable = Runnable {
-                // Update the text view text with a random number
-//                text_view.text = "Refresh and get random number ${mRandom.nextInt(500)}"
-//
-//                // Change the text view text color with a random color
-//                text_view.setTextColor(randomHSVColor())
                 indexArray = updateIndex()
                 // Hide swipe to refresh icon animation
                 swip.isRefreshing = false
@@ -463,6 +506,7 @@ class SmartScrollView: AppCompatActivity(){
         minHeight = 1
         maxHeight = 50
         pageIndex = 1
+        UIHandler?.removeCallbacksAndMessages(null)
     }
 }
 
